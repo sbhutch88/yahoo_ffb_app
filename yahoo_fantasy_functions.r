@@ -9,6 +9,39 @@ player.url <- "http://fantasysports.yahooapis.com/fantasy/v2/player/"
 #all.league.players.list <- fromJSON(as.character(all.league.players.json), asText=T)
 
 
+leagueStandings <- function(league.key,token){
+  leagueStandings.json <- GET (paste0(league.url,league.key,"/standings?format=json"), config(token=token))
+  leagueStandings.list <- fromJSON(as.character(leagueStandings.json), asText = T)
+  
+  print(length(leagueStandings.list))
+  
+  #Build DF of useful info
+  for(i in 0:11){ #This is going to need to change according to league size
+    leagueStandingsDF_temp <- data.frame(
+      Team = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[3]]"))),
+      Rank = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[3]]$team_standings$rank[1]"))),
+      Wins = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[3]]$team_standings$outcome_totals$wins[1]"))),
+      Losses = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[3]]$team_standings$outcome_totals$losses[1]"))),
+      Ties = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[3]]$team_standings$outcome_totals$ties[1]"))),
+      Points = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[3]]$team_standings$points_for[1]"))),
+      Pts_Against = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[3]]$team_standings$points_against[1]"))),
+      Division = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[7]][1]"))),
+      FAAB = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[9]][1]"))),
+      Moves = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[10]][1]"))),
+      Trades = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[11]][1]")))
+    )
+    
+    if(i==0){
+      leagueStandingsDF <- leagueStandingsDF_temp
+    }else{
+      leagueStandingsDF <- rbind(leagueStandingsDF,leagueStandingsDF_temp)
+    }
+  }
+  
+  return(leagueStandingsDF)
+  
+}
+
 #This function will pull information from your team, and specifically where they are on your roster (bench vs starting etc.)
 teamRoster <- function(teamNum){
   teamRoster.json <- GET(paste0(team.url, league.key, ".t.", teamNum, "/roster/players?format=json"), config(token = token))

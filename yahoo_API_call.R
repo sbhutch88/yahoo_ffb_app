@@ -15,7 +15,7 @@ game.key.list <- fromJSON(as.character(game.key.json), asText=T)
 game.key <- game.key.list$fantasy_content$game[[1]]["game_key"]
 
 #Personal league id
-league.id <- '42592' #'153118'
+#league.id <- '42592' #'153118'
 league.key <- paste0(game.key, ".l.", league.id)
 
 
