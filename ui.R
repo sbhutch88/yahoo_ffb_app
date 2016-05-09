@@ -1,10 +1,11 @@
 #Yahoo ffb app UI
 #initializing for displays
-source('initialize.r')
+#source('initialize.r')
 
 library(shiny)
+library(shinydashboard)
 
-shinyUI(
+dashboardBody(
   fluidPage(
     pageWithSidebar(
     
@@ -15,13 +16,13 @@ shinyUI(
       textInput("league.id", label="League ID", value = "42592",placeholder="Type your league id here"),
       actionButton("getLeague", "Refresh",icon("refresh")),
       selectInput("variable", label="Team:",
-                   choices = leagueStandingsDF$Team),
+                   choices = textOutput("leagueOwners"))
       
-      checkboxInput("team1", leagueStandingsDF$Team[1], FALSE)
+      #checkboxInput("team1", leagueStandingsDF$Team[1], FALSE)
       
     ),
     
-    mainPanel()
+    mainPanel(textOutput("leagueOwners"))
 ))
 )
 
