@@ -1,8 +1,11 @@
 #Yahoo ffb app UI
 #initializing for displays
+
 source('initialize.r')
 source('app_control.R')
+
 library(shiny)
+library(shinydashboard)
 
 shinyUI(
   tabsetPanel(
@@ -55,7 +58,3 @@ shinyUI(
              ))
   )
 )
-
-  #list("Cylinders" = "cyl", 
-  #     "Transmission" = "am", 
-  #     "Gears" = "gear"))
