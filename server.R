@@ -8,7 +8,7 @@ library(ggplot2)
 library(httpuv)
 #source('initialize.R')
 #source('app_control.R')
-source('yahoo_API_call.R')
+#source('yahoo_API_call.R')
 source('yahoo_fantasy_functions.r')
 
 shinyServer(function(input, output) {
@@ -68,13 +68,14 @@ shinyServer(function(input, output) {
                       x_max = (max(as.numeric(as.character(leagueStandingsDF$Points))) + 50)
       )
     )
+  })
   
   #Keeps league id from user updated
   updateLeagueID <- reactive({
     league.id = input$league.id
     return(league.id)
   })
-  })
+
 
   #THIS SEEMS TO NOW BE WORKING, BESIDES THE FACT THAT IT WON'T DISPLAY
   #*** THE CAT PRINTS IN THE BEGINNING BUT NOT ON A BUTTON CLICK.
