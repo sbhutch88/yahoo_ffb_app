@@ -10,7 +10,7 @@ player.url <- "http://fantasysports.yahooapis.com/fantasy/v2/player/"
 
 
 leagueStandings <- function(league.key,token){
-  leagueStandings.json <- GET (paste0(league.url,league.key,"/standings?format=json"), config(token=token))
+  leagueStandings.json <- GET(paste0(league.url,league.key,"/standings?format=json"), config(token=token))
   leagueStandings.list <- fromJSON(as.character(leagueStandings.json), asText = T)
   
   print(length(leagueStandings.list))
@@ -30,7 +30,6 @@ leagueStandings <- function(league.key,token){
       Moves = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[10]][1]"))),
       Trades = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[11]][1]")))
     )
-    
     if(i==0){
       leagueStandingsDF <- leagueStandingsDF_temp
     }else{
@@ -59,9 +58,7 @@ singleTeamCall <- function(teamNum){
 
 #Creates list of player id's for each player from a list.
 createTeamIDs <- function(teamList){
-  
   for(i in 0:(teamList$fantasy_content$team[[2]]$players$count-1)){
-    
     #This is a quick fix to adjust the calls if a player has the injury status column in their list. Should be improved later.
     shift <- 0
     if(eval(parse(text=paste0("names(teamList$fantasy_content$team[[2]]$players$", "`", i, "`", "$player[[1]][[4]])"))) == "status" | 
@@ -152,5 +149,48 @@ teamPlayerInfo <- function(player_id){
   playerFantasy.json <- GET(paste0(league.url, league.key, "/players;player_keys=",player_id,"/stats"), config(token = token))
   playerFantasy.list <- fromJSON(as.character(playerFantasy.json), asText=T)
   return(playerFantasy.list)
+}
+
+getTeamRoster <- function(teamnum){
+  #At the moment, singleTeamCall doesn't work. I think it's because yahoo
+  #has updated to the new season, and I now have to make an archived call.
+  teamList <- singleTeamCall(teamNum)
+  playerIDs_df <- createTeamIDs(teamList)
+  
+  #For now I'm going to exclude kicker and defense
+  cond1 <- playerIDs_df$position == "K"
+  playerIDs_df <- playerIDs_df[!cond1,]
+  cond2 <- playerIDs_df$position == "DEF"
+  playerIDs_df <- playerIDs_df[!cond2,]
+  
+  #Call and create DF of full team.
+  for(i in 1:nrow(playerIDs_df)){
+    playerStats_list <- nflPlayerStatSearch(playerIDs_df[i,3]) #Change the input later to be variable.
+    if(i == 1){
+      playerStats_df <- nflPlayerStatBuildDF(playerStats_list)
+    } else{
+      temp <- nflPlayerStatBuildDF(playerStats_list)
+      playerStats_df <- rbind(playerStats_df,temp)
+    }
+  }
+  # ISSUE: some players don't have a status(aka "probable" etc.), and maybe others, so the list calls change slightly.
+  # SOLUTION: I decided to go with a quick fix and just shift the list call contingent upon the existance of particular columns.
+  return(playerStats_df)
+}
+
+build_horiz_bar <- function(data,x,y,title,fill_color,x_max){
+  ggplot(data=data, aes(x=x, y=y)) + 
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank(),
+          panel.background = element_blank()) +
+    # theme(axis.title.x=element_blank(),
+    #       axis.text.x=element_blank(),
+    #       axis.ticks.x=element_blank()) +
+    geom_bar(colour="black", fill=fill_color, width=.8,stat="identity") + 
+    ggtitle(title) +
+    ylim(c(0,x_max)) +
+    geom_text(aes(label=as.numeric(as.character(y))), vjust=0, hjust=-.6) +
+    coord_flip()
 }
    

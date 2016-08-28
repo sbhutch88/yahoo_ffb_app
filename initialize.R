@@ -2,3 +2,4 @@
 
 leagueStandingsDF <- data.frame(Teams = 'League Owners')
 league.id <- 12345
+coaches <- list('League Coaches')
