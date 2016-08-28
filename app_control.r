@@ -12,11 +12,22 @@ source('yahoo_API_call.r')
 source('yahoo_fantasy_functions.r')
 
 leagueStandingsDF <- leagueStandings(league.key,token)
+leagueStandingsDF <- rbind(leagueStandingsDF[12,],
+                           leagueStandingsDF[8,],
+                           leagueStandingsDF[9,],
+                           leagueStandingsDF[10,],
+                           leagueStandingsDF[11,],
+                           leagueStandingsDF[7,],
+                           leagueStandingsDF[6,],
+                           leagueStandingsDF[2,],
+                           leagueStandingsDF[1,],
+                           leagueStandingsDF[3,],
+                           leagueStandingsDF[4,],
+                           leagueStandingsDF[5,])
+#Not sure why this is different than the other search,
+#but for now this will allow singleTeamCall to work correctly.
 
 #This will be a variable input later.
-teamNum = 3
-leagueStandingsDF <- leagueStandings(league.key,token)
-
 coaches <- list(leagueStandingsDF$Team)
 # #At the moment, singleTeamCall doesn't work. I think it's because yahoo 
 # #has updated to the new season, and I now have to make an archived call.

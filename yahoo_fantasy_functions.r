@@ -151,9 +151,7 @@ teamPlayerInfo <- function(player_id){
   return(playerFantasy.list)
 }
 
-getTeamRoster <- function(teamnum){
-  #At the moment, singleTeamCall doesn't work. I think it's because yahoo
-  #has updated to the new season, and I now have to make an archived call.
+getTeamRoster <- function(teamNum){ 
   teamList <- singleTeamCall(teamNum)
   playerIDs_df <- createTeamIDs(teamList)
   
@@ -184,9 +182,9 @@ build_horiz_bar <- function(data,x,y,title,fill_color,x_max){
           panel.grid.minor = element_blank(),
           panel.border = element_blank(),
           panel.background = element_blank()) +
-    # theme(axis.title.x=element_blank(),
-    #       axis.text.x=element_blank(),
-    #       axis.ticks.x=element_blank()) +
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank()) +
     geom_bar(colour="black", fill=fill_color, width=.8,stat="identity") + 
     ggtitle(title) +
     ylim(c(0,x_max)) +

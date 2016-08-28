@@ -72,26 +72,34 @@ shinyServer(function(input, output) {
   
   #Keeps league id from user updated
   updateLeagueID <- reactive({
+    
     league.id = input$league.id
+
     return(league.id)
   })
 
 
-  #THIS SEEMS TO NOW BE WORKING, BESIDES THE FACT THAT IT WON'T DISPLAY
-  #*** THE CAT PRINTS IN THE BEGINNING BUT NOT ON A BUTTON CLICK.
-  output$leagueOwners <- renderText({
-    cat('Gathering League Owners')
-    leagueOwners <- getLeagueStandings()
-    leagueOwnerList <- toString(leagueOwners$Teams)
-    cat(leagueOwnerList)
-    return(leagueOwnerList)
-  })
+  # #THIS SEEMS TO NOW BE WORKING, BESIDES THE FACT THAT IT WON'T DISPLAY
+  # #*** THE CAT PRINTS IN THE BEGINNING BUT NOT ON A BUTTON CLICK.
+  # output$leagueOwners <- renderText({
+  #   cat('Gathering League Owners')
+  #   leagueOwners <- getLeagueStandings()
+  #   leagueOwnerList <- toString(leagueOwners$Teams)
+  #   cat(leagueOwnerList)
+  #   return(leagueOwnerList)
+  # })
     
     
     #observeEvent(input$getLeague,vars=data, source('app_control.r'))
   
   output$teamRoster <- renderDataTable({
-    teamRoster
+    if (input$getRoster == 0)
+      return()
+    withProgress(message = 'Retrieving Roster', value = 0, {
+    roster <- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
+    })
+
+    return(roster)
   })
     #observeEvent(input$getLeague,vars=data, source('app_control.r'))
 })
