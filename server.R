@@ -98,8 +98,59 @@ shinyServer(function(input, output) {
     withProgress(message = 'Retrieving Roster', value = 0, {
     roster <- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
     })
-
     return(roster)
   })
-    #observeEvent(input$getLeague,vars=data, source('app_control.r'))
+  
+  output$QB <- renderTable({
+    if (input$getRoster == 0)
+      return()
+    withProgress(message = 'Retrieving Roster', value = 0, {
+      roster <<- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
+    })
+    QB <- roster[roster$position == 'QB',]
+    QB_df <- roster[roster$position == 'QB',c('position','full_name','nfl_team','passing_yds','passing_tds',
+                                              'interceptions','rushing_yds','rushing_tds')]
+    names(QB_df) <- c('Position','Player','Team','Passing Yds','Passing TDs','Interceptions','Rushing Yds','Rushing TDs')
+    row.names(QB_df) <- NULL
+    QB_df
+  })
+  
+  output$WR <- renderTable({
+    if (input$getRoster == 0)
+      return()
+    # withProgress(message = 'Retrieving Roster', value = 0, {
+    #   roster <- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
+    # })
+    WR <- roster[roster$position == 'WR',]
+    WR_df <- roster[roster$position == 'WR',c('position','full_name','nfl_team','rushing_yds','rushing_tds','receiving_yds','receiving_tds')]
+    names(WR_df) <- c('Position','Player','Team','Rusing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
+    row.names(WR_df) <- NULL
+    WR_df
+  })
+  
+  output$TE <- renderTable({
+    if (input$getRoster == 0)
+      return()
+    # withProgress(message = 'Retrieving Roster', value = 0, {
+    #   roster <- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
+    # })
+    TE <- roster[roster$position == 'TE',]
+    TE_df <- roster[roster$position == 'WR',c('position','full_name','nfl_team','rushing_yds','rushing_tds','receiving_yds','receiving_tds')]
+    names(TE_df) <- c('Position','Player','Team','Rusing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
+    row.names(TE_df) <- NULL
+    TE_df
+  })
+  
+  output$RB <- renderTable({
+    if (input$getRoster == 0)
+      return()
+    # withProgress(message = 'Retrieving Roster', value = 0, {
+    #   roster <- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
+    # })
+    RB <- roster[roster$position == 'RB',]
+    RB_df <- roster[roster$position == 'WR',c('position','full_name','nfl_team','rushing_yds','rushing_tds','receiving_yds','receiving_tds')]
+    names(RB_df) <- c('Position','Player','Team','Rusing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
+    row.names(RB_df) <- NULL
+    RB_df
+  })
 })

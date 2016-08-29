@@ -51,10 +51,23 @@ shinyUI(
                                      actionButton("getRoster", "refresh",icon("refresh"))
                                    ),
                                    mainPanel(
-                                     dataTableOutput('teamRoster')
+                                     tableOutput('QB'),
+                                     tableOutput('RB'),
+                                     tableOutput('WR'),
+                                     tableOutput('TE')
+                                     # tags$head(tags$style("#QB{color: green;
+                                     #                        font-size: 15px;
+                                     #                      font-style: bold;
+                                     #                      }"
+                                     # )
+                                     # )
+                                     #dataTableOutput('teamRoster')
+                                     # fluidRow(
+                                     #   #includeCSS("styles.css"),
+                                     # )
                                    )
                                  ))
               )
-    )
   )
+)
 
