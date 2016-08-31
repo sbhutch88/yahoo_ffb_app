@@ -12,9 +12,7 @@ player.url <- "http://fantasysports.yahooapis.com/fantasy/v2/player/"
 leagueStandings <- function(league.key,token){
   leagueStandings.json <- GET(paste0(league.url,league.key,"/standings?format=json"), config(token=token))
   leagueStandings.list <- fromJSON(as.character(leagueStandings.json), asText = T)
-  
   print(length(leagueStandings.list))
-  
   #Build DF of useful info
   for(i in 0:11){ #This is going to need to change according to league size
     leagueStandingsDF_temp <- data.frame(
@@ -28,7 +26,8 @@ leagueStandings <- function(league.key,token){
       Division = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[7]][1]"))),
       FAAB = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[9]][1]"))),
       Moves = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[10]][1]"))),
-      Trades = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[11]][1]")))
+      Trades = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[11]][1]"))),
+      Image = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[20]]$managers[[1]]$manager['image_url']")))
     )
     if(i==0){
       leagueStandingsDF <- leagueStandingsDF_temp
@@ -36,7 +35,6 @@ leagueStandings <- function(league.key,token){
       leagueStandingsDF <- rbind(leagueStandingsDF,leagueStandingsDF_temp)
     }
   }
-  
   return(leagueStandingsDF)
   
 }

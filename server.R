@@ -70,12 +70,17 @@ shinyServer(function(input, output) {
     )
   })
   
+  output$image <- renderUI({
+    if (input$getRoster == 0)
+      return()
+    image_address <- tags$img(src = as.character(leagueStandingsDF$Image[which(leagueStandingsDF$Team == input$teamNames)]), width = "200px", height = "200px")
+    return(image_address)
+  })
+  
   #Keeps league id from user updated
   updateLeagueID <- reactive({
     
     league.id = input$league.id
-
-    return(league.id)
   })
 
 
@@ -96,7 +101,7 @@ shinyServer(function(input, output) {
     if (input$getRoster == 0)
       return()
     withProgress(message = 'Retrieving Roster', value = 0, {
-    roster <- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
+    roster <<- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
     })
     return(roster)
   })
@@ -123,7 +128,7 @@ shinyServer(function(input, output) {
     # })
     WR <- roster[roster$position == 'WR',]
     WR_df <- roster[roster$position == 'WR',c('position','full_name','nfl_team','rushing_yds','rushing_tds','receiving_yds','receiving_tds')]
-    names(WR_df) <- c('Position','Player','Team','Rusing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
+    names(WR_df) <- c('Position','Player','Team','Rushing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
     row.names(WR_df) <- NULL
     WR_df
   })
@@ -135,8 +140,8 @@ shinyServer(function(input, output) {
     #   roster <- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
     # })
     TE <- roster[roster$position == 'TE',]
-    TE_df <- roster[roster$position == 'WR',c('position','full_name','nfl_team','rushing_yds','rushing_tds','receiving_yds','receiving_tds')]
-    names(TE_df) <- c('Position','Player','Team','Rusing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
+    TE_df <- roster[roster$position == 'TE',c('position','full_name','nfl_team','rushing_yds','rushing_tds','receiving_yds','receiving_tds')]
+    names(TE_df) <- c('Position','Player','Team','Rushing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
     row.names(TE_df) <- NULL
     TE_df
   })
@@ -148,8 +153,8 @@ shinyServer(function(input, output) {
     #   roster <- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
     # })
     RB <- roster[roster$position == 'RB',]
-    RB_df <- roster[roster$position == 'WR',c('position','full_name','nfl_team','rushing_yds','rushing_tds','receiving_yds','receiving_tds')]
-    names(RB_df) <- c('Position','Player','Team','Rusing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
+    RB_df <- roster[roster$position == 'RB',c('position','full_name','nfl_team','rushing_yds','rushing_tds','receiving_yds','receiving_tds')]
+    names(RB_df) <- c('Position','Player','Team','Rushing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
     row.names(RB_df) <- NULL
     RB_df
   })

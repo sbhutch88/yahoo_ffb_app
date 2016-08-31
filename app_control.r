@@ -29,6 +29,7 @@ leagueStandingsDF <- rbind(leagueStandingsDF[12,],
 
 #This will be a variable input later.
 coaches <- list(leagueStandingsDF$Team)
+
 # #At the moment, singleTeamCall doesn't work. I think it's because yahoo 
 # #has updated to the new season, and I now have to make an archived call.
 # teamList <- singleTeamCall(teamNum)

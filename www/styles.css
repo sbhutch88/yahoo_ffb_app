@@ -1,0 +1,19 @@
+
+image {
+border: 5px solid turquoise;
+padding: 10px;
+}
+
+table {
+  background-color: white;
+  width: 100%;
+  text-align: left;
+  padding: 15px;
+  color: maroon;
+}
+th {
+    background-color: teal;
+    color: white;
+    border-bottom: 1px solid #ddd;
+}
+tr:hover {background-color: turquoise}
