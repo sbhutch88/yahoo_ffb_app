@@ -42,6 +42,7 @@ playersLeage.url <-"http://fantasysports.yahooapis.com/fantasy/v2/league/223.l.4
 
 # transaction data
 transaction.url <- "http://fantasysports.yahooapis.com/fantasy/v2/transaction/223.l.431.tr.26"
+#http://fantasysports.yahooapis.com/fantasy/v2/league/223.l.431/transactions
 #try this too for more: /fantasy/v2/transaction//metadata
 
 #leage transaction data

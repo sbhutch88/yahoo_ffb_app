@@ -127,7 +127,7 @@ shinyServer(function(input, output) {
     
     QB_df <- cbind(QB_pic,QB_df) #binding images with data
     row.names(QB_df) <- NULL
-    DT::datatable(QB_df, escape = FALSE)
+    DT::datatable(QB_df, options = list(dom = 't'), escape = FALSE)
   })
   
   output$WR <- DT::renderDataTable({
@@ -144,7 +144,7 @@ shinyServer(function(input, output) {
     names(WR_df) <- c('Position','Player','Team','Rushing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
     row.names(WR_df) <- NULL
     WR_df <- cbind(WR_pic,WR_df) #binding images with data
-    DT::datatable(WR_df, escape = FALSE)
+    DT::datatable(WR_df, options = list(dom = 't'), escape = FALSE)
   })
   
   output$TE <- DT::renderDataTable({
@@ -160,7 +160,7 @@ shinyServer(function(input, output) {
     names(TE_df) <- c('Position','Player','Team','Rushing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
     row.names(TE_df) <- NULL
     TE_df <- cbind(TE_pic,TE_df) #binding images with data
-    DT::datatable(TE_df, escape = FALSE)
+    DT::datatable(TE_df, options = list(dom = 't'), escape = FALSE)
   })
   
   output$RB <- DT::renderDataTable({
@@ -176,6 +176,6 @@ shinyServer(function(input, output) {
     names(RB_df) <- c('Position','Player','Team','Rushing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
     row.names(RB_df) <- NULL
     RB_df <- cbind(RB_pic,RB_df) #binding images with data
-    DT::datatable(RB_df, escape = FALSE)
+    DT::datatable(RB_df, options = list(dom = 't'), escape = FALSE)
   })
 })
