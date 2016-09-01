@@ -6,6 +6,7 @@ library(httr)
 library(RJSONIO)
 library(ggplot2)
 library(httpuv)
+library(DT)
 #source('initialize.R')
 #source('app_control.R')
 #source('yahoo_API_call.R')
@@ -76,6 +77,7 @@ shinyServer(function(input, output) {
     image_address <- tags$img(src = as.character(leagueStandingsDF$Image[which(leagueStandingsDF$Team == input$teamNames)]), width = "200px", height = "200px")
     return(image_address)
   })
+
   
   #Keeps league id from user updated
   updateLeagueID <- reactive({
@@ -106,56 +108,74 @@ shinyServer(function(input, output) {
     return(roster)
   })
   
-  output$QB <- renderTable({
+  output$QB <- DT::renderDataTable({
     if (input$getRoster == 0)
       return()
     withProgress(message = 'Retrieving Roster', value = 0, {
       roster <<- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
     })
     QB <- roster[roster$position == 'QB',]
-    QB_df <- roster[roster$position == 'QB',c('position','full_name','nfl_team','passing_yds','passing_tds',
+    QB_pic <- data.frame(pic = matrix(0,ncol=1,nrow=nrow(QB)))
+    names(QB_pic) <- NULL
+    
+    for(i in 1:nrow(QB)){
+      QB_pic[i,1] <- paste0('\'<img src = \"',as.character(QB$headshot[i]),'\"></img>\'')
+    }
+    QB_df <- QB[,c('position','full_name','nfl_team','passing_yds','passing_tds',
                                               'interceptions','rushing_yds','rushing_tds')]
     names(QB_df) <- c('Position','Player','Team','Passing Yds','Passing TDs','Interceptions','Rushing Yds','Rushing TDs')
+    
+    QB_df <- cbind(QB_pic,QB_df) #binding images with data
     row.names(QB_df) <- NULL
-    QB_df
+    DT::datatable(QB_df, escape = FALSE)
   })
   
-  output$WR <- renderTable({
+  output$WR <- DT::renderDataTable({
     if (input$getRoster == 0)
       return()
-    # withProgress(message = 'Retrieving Roster', value = 0, {
-    #   roster <- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
-    # })
     WR <- roster[roster$position == 'WR',]
+    WR_pic <- data.frame(pic = matrix(0,ncol=1,nrow=nrow(WR)))
+    
+    for(i in 1:nrow(WR)){
+      WR_pic[i,1] <- paste0('\'<img src = \"',as.character(WR$headshot[i]),'\"></img>\'')
+    }
+    
     WR_df <- roster[roster$position == 'WR',c('position','full_name','nfl_team','rushing_yds','rushing_tds','receiving_yds','receiving_tds')]
     names(WR_df) <- c('Position','Player','Team','Rushing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
     row.names(WR_df) <- NULL
-    WR_df
+    WR_df <- cbind(WR_pic,WR_df) #binding images with data
+    DT::datatable(WR_df, escape = FALSE)
   })
   
-  output$TE <- renderTable({
+  output$TE <- DT::renderDataTable({
     if (input$getRoster == 0)
       return()
-    # withProgress(message = 'Retrieving Roster', value = 0, {
-    #   roster <- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
-    # })
     TE <- roster[roster$position == 'TE',]
+    TE_pic <- data.frame(pic = matrix(0,ncol=1,nrow=nrow(TE)))
+    
+    for(i in 1:nrow(TE)){
+      TE_pic[i,1] <- paste0('\'<img src = \"',as.character(TE$headshot[i]),'\"></img>\'')
+    }
     TE_df <- roster[roster$position == 'TE',c('position','full_name','nfl_team','rushing_yds','rushing_tds','receiving_yds','receiving_tds')]
     names(TE_df) <- c('Position','Player','Team','Rushing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
     row.names(TE_df) <- NULL
-    TE_df
+    TE_df <- cbind(TE_pic,TE_df) #binding images with data
+    DT::datatable(TE_df, escape = FALSE)
   })
   
-  output$RB <- renderTable({
+  output$RB <- DT::renderDataTable({
     if (input$getRoster == 0)
       return()
-    # withProgress(message = 'Retrieving Roster', value = 0, {
-    #   roster <- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
-    # })
     RB <- roster[roster$position == 'RB',]
+    RB_pic <- data.frame(pic = matrix(0,ncol=1,nrow=nrow(RB)))
+    
+    for(i in 1:nrow(RB)){
+      RB_pic[i,1] <- paste0('\'<img src = \"',as.character(RB$headshot[i]),'\"></img>\'')
+    }
     RB_df <- roster[roster$position == 'RB',c('position','full_name','nfl_team','rushing_yds','rushing_tds','receiving_yds','receiving_tds')]
     names(RB_df) <- c('Position','Player','Team','Rushing Yds', 'Rushing TDs','Receiving Yds','Receiving TDs')
     row.names(RB_df) <- NULL
-    RB_df
+    RB_df <- cbind(RB_pic,RB_df) #binding images with data
+    DT::datatable(RB_df, escape = FALSE)
   })
 })

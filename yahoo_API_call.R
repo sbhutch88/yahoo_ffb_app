@@ -20,10 +20,10 @@ league.key <- paste0(game.key, ".l.", league.id)
 
 # ALL OF THE FOLLOWING ARE EXAMPLES FOR NOW, I'll LIKELY MAKE CALLS IN SEPARATE FILES.
 
-nfl.url <- "http://fantasysports.yahooapis.com/fantasy/v2/game/nfl"
-#Collecting some NFL stats
-nfl.stat.categories.json <- GET(paste0(nfl.url,"/stat_categories?format=json"), config(token=token))
-nfl.stat.categories.list <- fromJSON(as.character(nfl.stat.categories.json), asText = T)
+# nfl.url <- "http://fantasysports.yahooapis.com/fantasy/v2/game/nfl"
+# #Collecting some NFL stats
+# nfl.stat.categories.json <- GET(paste0(nfl.url,"/stat_categories?format=json"), config(token=token))
+# nfl.stat.categories.list <- fromJSON(as.character(nfl.stat.categories.json), asText = T)
 
 games.url <- "http://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games"
 #Can also add sub-codes like particular games/seasons

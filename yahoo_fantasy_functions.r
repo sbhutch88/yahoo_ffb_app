@@ -106,14 +106,16 @@ nflPlayerStatBuildDF <- function(nfl.player.stats.list){
     shift <- shift+1
   }
   
-  player.df <- data.frame(cbind(player_id = nfl.player.stats.list$fantasy_content$player[[1]][[2]],
+  player.df <- data.frame(player_id = nfl.player.stats.list$fantasy_content$player[[1]][[2]],
                                 full_name = nfl.player.stats.list$fantasy_content$player[[1]][[3]]$name[[1]],
                                 first_name = nfl.player.stats.list$fantasy_content$player[[1]][[3]]$name[[2]],
                                 last_name = nfl.player.stats.list$fantasy_content$player[[1]][[3]]$name[[3]],
                                 nfl_team = nfl.player.stats.list$fantasy_content$player[[1]][[6+shift]],
                                 nfl_team_abr = nfl.player.stats.list$fantasy_content$player[[1]][[7+shift]],
                                 bye_week = nfl.player.stats.list$fantasy_content$player[[1]][[8+shift]],
-                                position = nfl.player.stats.list$fantasy_content$player[[1]][[10+shift]]),
+                                position = nfl.player.stats.list$fantasy_content$player[[1]][[10+shift]],
+                                headshot = nfl.player.stats.list$fantasy_content$player[[1]][[11+shift]]$headshot[1],
+                                #image_url = nfl.player.stats.list$fantasy_content$player[[1]][[12+shift]]$image_url,
                                 season = nfl.player.stats.list$fantasy_content$player[[2]]$player_stats$`0`[2],
                                 games_played = nfl.player.stats.list$fantasy_content$player[[2]]$player_stats$stats[[1]]$stat[[2]],
                                 pass_attempts = nfl.player.stats.list$fantasy_content$player[[2]]$player_stats$stats[[2]]$stat[[2]],
@@ -150,7 +152,7 @@ teamPlayerInfo <- function(player_id){
 }
 
 getTeamRoster <- function(teamNum){ 
-  teamList <- singleTeamCall(teamNum)
+  teamList <- singleTeamCall(teamNum) 
   playerIDs_df <- createTeamIDs(teamList)
   
   #For now I'm going to exclude kicker and defense

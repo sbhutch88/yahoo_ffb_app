@@ -5,6 +5,7 @@ source('initialize.r')
 source('app_control.R')
 library(shiny)
 library(shinydashboard)
+library(DT)
 
 shinyUI(
   tabsetPanel(
@@ -34,13 +35,13 @@ shinyUI(
                  actionButton("getRoster", "Get Roster",icon("refresh")),
                  tags$br(),
                  tags$br(),
-                 uiOutput('Image')
+                 uiOutput('image')
                )),
              mainPanel(#id="table",
-               tableOutput('QB'),
-               tableOutput('RB'),
-               tableOutput('WR'),
-               tableOutput('TE')
+               DT::dataTableOutput('QB'),
+               DT::dataTableOutput('RB'),
+               DT::dataTableOutput('WR'),
+               DT::dataTableOutput('TE')
              )
     )
   )
