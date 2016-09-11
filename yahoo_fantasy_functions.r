@@ -5,8 +5,13 @@ league.url <- "http://fantasysports.yahooapis.com/fantasy/v2/league/"
 team.url <- "http://fantasysports.yahooapis.com/fantasy/v2/team/"
 player.url <- "http://fantasysports.yahooapis.com/fantasy/v2/player/"
 
-#all.league.players.json <- GET(paste0(league.url, league.key, "/players?format=json"), config(token = token))
-#all.league.players.list <- fromJSON(as.character(all.league.players.json), asText=T)
+#Very quickly gets info on all players in the league, without stats.
+#*** It looks like I can add to the end of this call to get more information. There is some way to choose certain options too
+getLeaguePlayers <- function(league.key){
+  all.league.players.json <- GET(paste0(league.url, league.key, "/players/ownership/stats?format=json"), config(token = token))
+  all.league.players.list <- fromJSON(as.character(all.league.players.json), asText=T)
+  return(all.league.players.list)
+}  
 
 
 leagueStandings <- function(league.key,token){
@@ -151,6 +156,12 @@ teamPlayerInfo <- function(player_id){
   return(playerFantasy.list)
 }
 
+getTransactions <- function(league.key){
+  leagueTransactions.json <- GET(paste0(league.url,league.key,"/transactions?format=json"),config(token = token))
+  leagueTransactions.list <- fromJSON(as.character(leagueTransactions.json), asText=T)
+  return(leagueTransactions.list)
+}
+
 getTeamRoster <- function(teamNum){ 
   teamList <- singleTeamCall(teamNum) 
   playerIDs_df <- createTeamIDs(teamList)
@@ -185,10 +196,78 @@ build_horiz_bar <- function(data,x,y,title,fill_color,x_max){
     theme(axis.title.x=element_blank(),
           axis.text.x=element_blank(),
           axis.ticks.x=element_blank()) +
-    geom_bar(colour="black", fill=fill_color, width=.8,stat="identity") + 
+    theme(axis.text=element_text(size=16), 
+          plot.title = element_text(size = 20, face = "bold")) + 
+    geom_bar(colour="black", fill=fill_color, width=.9,stat="identity") + 
     ggtitle(title) +
     ylim(c(0,x_max)) +
-    geom_text(aes(label=as.numeric(as.character(y))), vjust=0, hjust=-.6) +
+    geom_text(aes(label=as.numeric(as.character(y))), vjust=0, hjust=-.8, size = 6) +
     coord_flip()
+}
+
+build_DT <- function(df){
+  DT::datatable(df, options = list(dom = 't'), escape = FALSE)
+}
+
+################Twitter connections
+
+connectToTwitter<-function(){
+  # Keys linked to Richard's account:
+  api_key <- "AtQtjjw2E91n2APFYOIlqd9Ur" 
+  api_secret <- "hA6Xnjd6jRddfgvVMzlfWGqd1M1X68EAwEO4yqYIzUTb51jlCr" 
+  token <- "558889232-ljdFmtDDZPeeJPZG3bYQhYZO75eXa5t1hVDjrdAd" 
+  token_secret <- "5gVYRr0fKbpsT6hRqLVhDAxHTu4COxTVCOLsaDjx8aiFV"
+  
+  #Create Twitter Connection
+  setup_twitter_oauth(api_key, api_secret, token, token_secret)  
+}
+
+# Get twitter handles for a list of URLs
+getTwitterHandles<-function(locations.df){
+  websites <- as.character(locations.df$website)
+  twitter_handles<-scrapeForHandle(websites)
+  return(twitter_handles)
+}
+
+getTweets<-function(twitter_handles){
+  tweets <- lapply(twitter_handles, function(x) if (length(x) != 0) searchTwitter(x,n=3))  
+  tweets.df <- lapply(tweets, function(x) twListToDF(x))
+  return(as.data.frame(tweets.df))
+}
+
+tweetOrganize <- function(){
+  withProgress(message = 'Connecting to Twitter!', value = 0.2, {
+    allTweets <- getTweets(as.character(roster$full_name))
+    handles <- as.character(roster$full_name)
+    handles <- sapply(handles, function(x) paste("<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", x, "<br/>"))
+    tweets <- "<br/>"
+    for(i in 0:(nrow(roster)-1)){
+      j <- i + 1 #because df starts at 1
+      if(i == 0){
+        tweets <- paste(tweets,
+                        handles[j],
+                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[1],"<br/>",
+                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[2],"<br/>",
+                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[3],
+                        "<br/>",
+                        "<br/>"
+        )
+      } else {
+        tweets <- paste(tweets,
+                        handles[j],
+                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[1]"))),"<br/>",
+                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[2]"))),"<br/>",
+                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[3]"))),
+                        "<br/>",
+                        "<br/>"
+        )
+      }
+    }
+    #removing problem characters that are UTF-8
+    Encoding(tweets) <- "UTF-8"
+    tweets <- iconv(tweets, "UTF-8", "UTF-8",sub='')
+
+    return(tweets)
+  })
 }
    

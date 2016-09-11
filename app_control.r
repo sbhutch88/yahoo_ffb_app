@@ -7,9 +7,14 @@ library(httr)
 library(RJSONIO)
 library(ggplot2)
 library(httpuv)
+library(twitteR)
 
 source('yahoo_API_call.r')
 source('yahoo_fantasy_functions.r')
+
+#Connecting to twitter
+source('connectToTwitter.R')
+connectToTwitter()
 
 leagueStandingsDF <- leagueStandings(league.key,token)
 leagueStandingsDF <- rbind(leagueStandingsDF[12,],

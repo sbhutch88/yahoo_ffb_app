@@ -16,7 +16,7 @@ shinyUI(
                textInput("league.id", label="League ID", value = "42592",placeholder="Type your league id here"),
                actionButton("getLeague", "Get My League Data",icon("refresh"))
              ),
-             mainPanel(id = "image",
+             mainPanel(
                column(6,plotOutput('Total_points')),
                column(6,plotOutput('Trades')),
                column(6,plotOutput('FAAB')),
@@ -35,7 +35,8 @@ shinyUI(
                  actionButton("getRoster", "Get Roster",icon("refresh")),
                  tags$br(),
                  tags$br(),
-                 uiOutput('image')
+                 uiOutput('image'),
+                 htmlOutput('outputTweets')
                )),
              mainPanel(#id="table",
                DT::dataTableOutput('QB'),

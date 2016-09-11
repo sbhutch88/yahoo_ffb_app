@@ -24,15 +24,18 @@ shinyServer(function(input, output) {
   output$FAAB <- renderPlot({
     if (input$getLeague == 0)
       return()
-    build_horiz_bar(data = leagueStandingsDF,
-                    x = leagueStandingsDF$Team,
-                    y = as.numeric(as.character(leagueStandingsDF$FAAB)),
-                    title = "FAAB Dollars",
-                    fill_color = "blue",
-                    x_max = 55
-                    )
+    input$getLeague
+    isolate(
+      build_horiz_bar(data = leagueStandingsDF,
+                      x = leagueStandingsDF$Team,
+                      y = as.numeric(as.character(leagueStandingsDF$FAAB)),
+                      title = "FAAB Dollars",
+                      fill_color = "blue",
+                      x_max = 55
+      )
+    )
   })
-  
+
   output$Trades <- renderPlot({
     if (input$getLeague == 0)
       return()
@@ -44,7 +47,7 @@ shinyServer(function(input, output) {
                     x_max = (max(as.numeric(as.character(leagueStandingsDF$Trades))) + 3)
     )
   })
-  
+
   output$Moves <- renderPlot({
     if (input$getLeague == 0)
       return()
@@ -56,7 +59,7 @@ shinyServer(function(input, output) {
                     x_max = (max(as.numeric(as.character(leagueStandingsDF$Moves))) + 3)
     )
   })
-  
+
   output$Total_points <- renderPlot({
     if (input$getLeague == 0)
       return()
@@ -178,4 +181,30 @@ shinyServer(function(input, output) {
     RB_df <- cbind(RB_pic,RB_df) #binding images with data
     DT::datatable(RB_df, options = list(dom = 't'), escape = FALSE)
   })
+  
+  ## Format and display the output news
+  output$outputTweets <- renderUI({
+    if (input$getRoster == 0)
+      return()
+    tweets <- tweetOrganize()
+    return(HTML(as.character(tweets)))
+  })
 })
+
+
+# #####TWITTER OUTPUT
+# ## Get the news feed, and only do so if the news button gets clicked
+# getNews<-reactive({
+#   ## Only do it if the button gets clicked
+#   buttonclick <- input$getRoster
+#   if(is.null(buttonclick))
+#     return()
+#   ## Add progress bar (not necessarily accurate!)
+#   withProgress(message = 'Getting Roster!', value = 0.2, {
+#     #detailed_locations.df <- isolate(getDetailedPlacesOnCurrentMap())
+#     playerTweets<-getTeamRoster(detailed_locations.df)
+#   })
+#   getTweets(roster$full_name)
+# })
+
+
