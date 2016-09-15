@@ -110,7 +110,6 @@ nflPlayerStatBuildDF <- function(nfl.player.stats.list){
      names(nfl.player.stats.list$fantasy_content$player[[1]][[5]]) == "injury_note"){
     shift <- shift+1
   }
-  
   player.df <- data.frame(player_id = nfl.player.stats.list$fantasy_content$player[[1]][[2]],
                                 full_name = nfl.player.stats.list$fantasy_content$player[[1]][[3]]$name[[1]],
                                 first_name = nfl.player.stats.list$fantasy_content$player[[1]][[3]]$name[[2]],
@@ -120,7 +119,7 @@ nflPlayerStatBuildDF <- function(nfl.player.stats.list){
                                 bye_week = nfl.player.stats.list$fantasy_content$player[[1]][[8+shift]],
                                 position = nfl.player.stats.list$fantasy_content$player[[1]][[10+shift]],
                                 headshot = nfl.player.stats.list$fantasy_content$player[[1]][[11+shift]]$headshot[1],
-                                #image_url = nfl.player.stats.list$fantasy_content$player[[1]][[12+shift]]$image_url,
+                                #image_url = nfl.player.stats.list$fantasy_content$player[[1]][[11+shift]]$image_url,
                                 season = nfl.player.stats.list$fantasy_content$player[[2]]$player_stats$`0`[2],
                                 games_played = nfl.player.stats.list$fantasy_content$player[[2]]$player_stats$stats[[1]]$stat[[2]],
                                 pass_attempts = nfl.player.stats.list$fantasy_content$player[[2]]$player_stats$stats[[2]]$stat[[2]],
@@ -230,6 +229,7 @@ getTwitterHandles<-function(locations.df){
 }
 
 getTweets<-function(twitter_handles){
+  #THere are situations where not all tweets are queried. In this case I need to replace with a blank for later manipulation.
   tweets <- lapply(twitter_handles, function(x) if (length(x) != 0) searchTwitter(x,n=3))  
   tweets.df <- lapply(tweets, function(x) twListToDF(x))
   return(as.data.frame(tweets.df))
@@ -245,7 +245,7 @@ tweetOrganize <- function(){
       j <- i + 1 #because df starts at 1
       if(i == 0){
         tweets <- paste(tweets,
-                        handles[j],
+                        paste0('\'<img src = \"',as.character(roster$headshot[j]),'\"></img>\''), handles[j],
                         "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[1],"<br/>",
                         "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[2],"<br/>",
                         "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[3],
@@ -254,6 +254,7 @@ tweetOrganize <- function(){
         )
       } else {
         tweets <- paste(tweets,
+                        paste0('\'<img src = \"',as.character(roster$headshot[j]),'\"></img>\''),
                         handles[j],
                         "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[1]"))),"<br/>",
                         "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[2]"))),"<br/>",

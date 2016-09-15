@@ -11,18 +11,18 @@ shinyUI(
   tabsetPanel(
     tabPanel("Dashboard",
              fluidPage(theme = "bootstrap.css",
-             headerPanel("FFB League Explorer"),
-             sidebarPanel(
-               textInput("league.id", label="League ID", value = "42592",placeholder="Type your league id here"),
-               actionButton("getLeague", "Get My League Data",icon("refresh"))
-             ),
-             mainPanel(
-               column(6,plotOutput('Total_points')),
-               column(6,plotOutput('Trades')),
-               column(6,plotOutput('FAAB')),
-               column(6,plotOutput('Moves'))
-             )
-    )),
+                       headerPanel("FFB League Explorer"),
+                       sidebarPanel(
+                         textInput("league.id", label="League ID", value = "42592",placeholder="Type your league id here"),
+                         actionButton("getLeague", "Get My League Data",icon("refresh"))
+                       ),
+                       mainPanel(
+                         column(6,plotOutput('Total_points')),
+                         column(6,plotOutput('Trades')),
+                         column(6,plotOutput('FAAB')),
+                         column(6,plotOutput('Moves'))
+                       )
+             )),
     tabPanel("Rosters",
              theme = "bootstrap.css",
              includeCSS("www/styles.css"),
@@ -36,8 +36,26 @@ shinyUI(
                  tags$br(),
                  tags$br(),
                  uiOutput('image'),
-                 htmlOutput('outputTweets')
-               )),
+                 tags$br(),
+                 wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
+                 #tabBox(width = NULL, style = "overflow-y:scroll; max-height: 800px", 
+                        id = "tabbedBox", height = "250px",
+                        #                         fluidRow(tags$style(".nav-tabs { background-color: #006747;
+                        # .nav-tabs-custom .nav-tabs li.active:hover a, .nav-tabs-custom .nav-tabs li.active a {
+                        # background-color: transparent;
+                        #                                    border-color: transparent;
+                        #                                    }
+                        #                                    
+                        #                                    .nav-tabs-custom .nav-tabs li.active {
+                        #                                    border-top-color: #FFF;
+                        #                                    }")),
+                        div(
+                          tags$br(),
+                          actionButton("getTweets","Get Tweets", icon("twitter")),
+                          htmlOutput('outputTweets')
+                        )
+                 ))
+             ),
              mainPanel(#id="table",
                DT::dataTableOutput('QB'),
                DT::dataTableOutput('RB'),
