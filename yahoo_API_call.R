@@ -1,7 +1,7 @@
 #This file is following a blog post by corey nissen: http://blog.corynissen.com/2013/12/using-r-to-analyze-yahoo-fantasy.html
 
-consumer.key = "dj0yJmk9OGN5MW9PU2s0SmhDJmQ9WVdrOVFtRmxhMDFsTm1zbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1mMw--"
-consumer.secret = "eecd6404344d6c563f3234ed821dfa3ce7d3305b"
+consumer.key = paste(readLines("consumer_key.txt"), collapse=" ")
+consumer.secret = paste(readLines("consumer_secret.txt"), collapse=" ")
 
 oauth_endpoints("yahoo")
 myapp <- oauth_app("yahoo", key = consumer.key, secret = consumer.secret)

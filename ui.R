@@ -37,30 +37,32 @@ shinyUI(
                  tags$br(),
                  uiOutput('image'),
                  tags$br(),
-                 wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
-                 #tabBox(width = NULL, style = "overflow-y:scroll; max-height: 800px", 
-                        id = "tabbedBox", height = "250px",
-                        #                         fluidRow(tags$style(".nav-tabs { background-color: #006747;
-                        # .nav-tabs-custom .nav-tabs li.active:hover a, .nav-tabs-custom .nav-tabs li.active a {
-                        # background-color: transparent;
-                        #                                    border-color: transparent;
-                        #                                    }
-                        #                                    
-                        #                                    .nav-tabs-custom .nav-tabs li.active {
-                        #                                    border-top-color: #FFF;
-                        #                                    }")),
-                        div(
-                          tags$br(),
-                          actionButton("getTweets","Get Tweets", icon("twitter")),
-                          htmlOutput('outputTweets')
-                        )
+                 wellPanel(id = "tPanel2",style = "overflow-y:scroll; max-height: 600px",
+                           #tabBox(width = NULL, style = "overflow-y:scroll; max-height: 800px", 
+                           id = "tabbedBox", height = "250px",
+                           #                         fluidRow(tags$style(".nav-tabs { background-color: #006747;
+                           # .nav-tabs-custom .nav-tabs li.active:hover a, .nav-tabs-custom .nav-tabs li.active a {
+                           # background-color: transparent;
+                           #                                    border-color: transparent;
+                           #                                    }
+                           #                                    
+                           #                                    .nav-tabs-custom .nav-tabs li.active {
+                           #                                    border-top-color: #FFF;
+                           #                                    }")),
+                           div(
+                             tags$br(),
+                             actionButton("getTweets","Get Tweets", icon("twitter")),
+                             htmlOutput('outputTweets')
+                           )
                  ))
              ),
              mainPanel(#id="table",
-               DT::dataTableOutput('QB'),
-               DT::dataTableOutput('RB'),
-               DT::dataTableOutput('WR'),
-               DT::dataTableOutput('TE')
+               wellPanel(id = "tPanel1",style = "overflow-y:scroll; max-height: 1000px",
+                         DT::dataTableOutput('QB'),
+                         DT::dataTableOutput('RB'),
+                         DT::dataTableOutput('WR'),
+                         DT::dataTableOutput('TE')
+               )
              )
     )
   )

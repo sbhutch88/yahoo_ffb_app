@@ -128,10 +128,10 @@ shinyServer(function(input, output) {
                                               'interceptions','rushing_yds','rushing_tds')]
     names(QB_df) <- c('Position','Player','Team','Passing Yds','Passing TDs','Interceptions','Rushing Yds','Rushing TDs')
     
-    QB_df <- cbind(QB_pic,QB_df) #binding images with data
+    QB_df <- cbind(pic = QB_pic,QB_df) #binding images with data
     row.names(QB_df) <- NULL
     DT::datatable(QB_df, 
-                  options = list(dom = 't', columnDefs = list(list(className = 'dt-center', targets = 0:8))),
+                  options = list(dom = 't', columnDefs = list(list(className = 'dt-center', targets = 0:ncol(QB_df)))),
                   escape = FALSE)
   })
   
@@ -150,7 +150,7 @@ shinyServer(function(input, output) {
     row.names(WR_df) <- NULL
     WR_df <- cbind(WR_pic,WR_df) #binding images with data
     DT::datatable(WR_df, options = list(dom = 't',
-                                        columnDefs = list(list(className = 'dt-center', targets = 0:8))), 
+                                        columnDefs = list(list(className = 'dt-center', targets = 0:ncol(WR_df)))), 
                   escape = FALSE)
   })
   
@@ -168,7 +168,7 @@ shinyServer(function(input, output) {
     row.names(TE_df) <- NULL
     TE_df <- cbind(TE_pic,TE_df) #binding images with data
     DT::datatable(TE_df, options = list(dom = 't', 
-                                        columnDefs = list(list(className = 'dt-center', targets = 0:8))), 
+                                        columnDefs = list(list(className = 'dt-center', targets = 0:ncol(TE_df)))), 
                   escape = FALSE)
   })
   
@@ -186,7 +186,7 @@ shinyServer(function(input, output) {
     row.names(RB_df) <- NULL
     RB_df <- cbind(RB_pic,RB_df) #binding images with data
     DT::datatable(RB_df, options = list(dom = 't',
-                                        columnDefs = list(list(className = 'dt-center', targets = 0:8))), 
+                                        columnDefs = list(list(className = 'dt-center', targets = 0:ncol(RB_df)))), 
                   escape = FALSE)
   })
   
