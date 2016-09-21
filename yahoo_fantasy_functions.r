@@ -9,19 +9,20 @@ player.url <- "http://fantasysports.yahooapis.com/fantasy/v2/player/"
 #*** It looks like I can add to the end of this call to get more information. There is some way to choose certain options too
 getLeaguePlayers <- function(league.key){
   all.league.players.json <- GET(paste0(league.url, league.key, "/players/ownership/stats?format=json"), config(token = token))
-  all.league.players.list <- fromJSON(as.character(all.league.players.json), asText=T)
+  all.league.players.list <- RJSONIO::fromJSON(as.character(all.league.players.json), asText=T)
   return(all.league.players.list)
 }  
 
 
 leagueStandings <- function(league.key,token){
   leagueStandings.json <- GET(paste0(league.url,league.key,"/standings?format=json"), config(token=token))
-  leagueStandings.list <- fromJSON(as.character(leagueStandings.json), asText = T)
+  leagueStandings.list <- RJSONIO::fromJSON(as.character(leagueStandings.json), asText = T)
   print(length(leagueStandings.list))
   #Build DF of useful info
   for(i in 0:11){ #This is going to need to change according to league size
     leagueStandingsDF_temp <- data.frame(
       Team = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[3]]"))),
+      TeamID = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[1]][[2]]"))),
       Rank = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[3]]$team_standings$rank[1]"))),
       Wins = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[3]]$team_standings$outcome_totals$wins[1]"))),
       Losses = eval(parse(text=paste0("leagueStandings.list$fantasy_content$league[[2]]$standings[[1]]$teams$", "`", i, "`", "$team[[3]]$team_standings$outcome_totals$losses[1]"))),
@@ -47,7 +48,7 @@ leagueStandings <- function(league.key,token){
 #This function will pull information from your team, and specifically where they are on your roster (bench vs starting etc.)
 teamRoster <- function(teamNum){
   teamRoster.json <- GET(paste0(team.url, league.key, ".t.", teamNum, "/roster/players?format=json"), config(token = token))
-  teamRoster.list <- fromJSON(as.character(teamRoster.json), asText=T)
+  teamRoster.list <- RJSONIO::fromJSON(as.character(teamRoster.json), asText=T)
   return(teamRoster.list)
 }
 
@@ -55,7 +56,7 @@ teamRoster <- function(teamNum){
 #Will call player info from a single fantasy team in a league.
 singleTeamCall <- function(teamNum){
   team.league.players.json <- GET(paste0(team.url, league.key, ".t.", teamNum, "/players?format=json"), config(token = token))
-  team.league.players.list <- fromJSON(as.character(team.league.players.json), asText=T)
+  team.league.players.list <- RJSONIO::fromJSON(as.character(team.league.players.json), asText=T)
   return(team.league.players.list)
 }
 
@@ -90,9 +91,9 @@ createTeamIDs <- function(teamList){
 #Given a player ID, will return stats and info from that player
 nflPlayerStatSearch <- function(playerCall.key){
   nfl.player.stats.json <- GET(paste0(player.url, playerCall.key, "/stats?format=json"), config(token = token))
-  nfl.player.stats.list <- fromJSON(as.character(nfl.player.stats.json), asText=T)
+  nfl.player.stats.list <- RJSONIO::fromJSON(as.character(nfl.player.stats.json), asText=T)
   nfl.player.draftAnalysis.json <- GET(paste0(player.url, playerCall.key, "/draftanalysis?format=json"), config(token = token))
-  nfl.player.draftAnalysis.list <- fromJSON(as.character(nfl.player.draftAnalysis.json), asText=T)
+  nfl.player.draftAnalysis.list <- RJSONIO::fromJSON(as.character(nfl.player.draftAnalysis.json), asText=T)
   return(nfl.player.stats.list) 
 }
 
@@ -151,13 +152,13 @@ nflPlayerStatBuildDF <- function(nfl.player.stats.list){
 
 teamPlayerInfo <- function(player_id){
   playerFantasy.json <- GET(paste0(league.url, league.key, "/players;player_keys=",player_id,"/stats"), config(token = token))
-  playerFantasy.list <- fromJSON(as.character(playerFantasy.json), asText=T)
+  playerFantasy.list <- RJSONIO::fromJSON(as.character(playerFantasy.json), asText=T)
   return(playerFantasy.list)
 }
 
 getTransactions <- function(league.key){
   leagueTransactions.json <- GET(paste0(league.url,league.key,"/transactions?format=json"),config(token = token))
-  leagueTransactions.list <- fromJSON(as.character(leagueTransactions.json), asText=T)
+  leagueTransactions.list <- RJSONIO::fromJSON(as.character(leagueTransactions.json), asText=T)
   return(leagueTransactions.list)
 }
 
@@ -236,7 +237,7 @@ getTweets<-function(twitter_handles){
 }
 
 tweetOrganize <- function(){
-  withProgress(message = 'Connecting to Twitter!', value = 0.2, {
+  withProgress(message = 'Connecting to Twitter!', value = 0.7, {
     allTweets <- getTweets(as.character(roster$full_name))
     handles <- as.character(roster$full_name)
     handles <- sapply(handles, function(x) paste("<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", x, "<br/>"))
@@ -271,4 +272,164 @@ tweetOrganize <- function(){
     return(tweets)
   })
 }
-   
+
+#########INSTAGRAM
+
+getInstagramfromJSON <- function(myLat,myLon,myRadius){
+  # given latitude=myLat,longitude=myLong, myRadius (in meters)
+  # returns list from JSON-file with pictures/videos in that area
+
+  ACCESS_TOKEN <- paste(readLines("instagram_key.txt"), collapse=" ")
+  url <- paste("https://api.instagram.com/v1/locations/search?",
+               "lat=",myLat,
+               "&lng=",myLon,
+               "&distance=",myRadius,
+               "&access_token=", ACCESS_TOKEN,
+               sep="")
+  browser()
+  doc <- getURL(url)
+
+  x <- fromJSON(doc,simplify = FALSE)
+  if(x$meta$code==200) {
+    return(x)
+  } else {
+    print("error in InstagramfromJSON")
+    print(x$meta$code)
+    return(x)
+  }
+}
+
+
+convertInstagramToDF <- function(x){
+  # given list from JSON-file, it extracts dataframe with:
+
+  if(length(x$data)>0){
+    myname=""
+    myid=""
+    mylat=""
+    mylng=""
+
+    for(i in (1:length(x$data))){
+      myname[i] <- x$data[[i]]$name
+      myid[i] <- x$data[[i]]$id
+      mylat[i] <- x$data[[i]]$latitude
+      mylng[i] <- x$data[[i]]$longitude
+    }
+
+    df <- data.frame(id=myid,
+                     name=myname,
+                     lat=as.double(mylat),
+                     lng=as.double(mylng),
+                     stringsAsFactors = FALSE
+    )
+
+  }else{
+    df <- data.frame(id=character(0),
+                     name=character(0),
+                     lat=numeric(0),
+                     lng=numeric(0),
+                     stringsAsFactors = FALSE
+    )
+  }
+  return(df)
+
+}
+
+
+convertInstagramToFullDF <- function(x){
+  if(length(x$data)>0){
+    myname=""
+    myid=""
+    mylat=""
+    mylng=""
+    mytype=""
+    mytags=""
+    mycreated_at=""
+    mylink=""
+    mylikes=""
+    myurl=""
+    mytext=""
+
+    for(j in (1:length(x$data))){
+      y <- getInstagramLocationMedia(x$data[[j]]$id)
+      if(y$meta$code==200 && length(y$data)>0){
+        for(i in (1:length(y$data))){
+          myname <- append(myname,safeEntry(y$data[[i]]$location$name))
+          myid <- append(myid,y$data[[i]]$location$id)
+          mylat <- append(mylat,y$data[[i]]$location$latitude)
+          mylng <- append(mylng,y$data[[i]]$location$longitude)
+          mytype <- append(mytype,safeEntry(y$data[[i]]$type))
+          if(length(y$data[[i]]$tags)>0){
+            tmp <- do.call("paste",y$data[[i]]$tags)
+          } else{
+            tmp <- ""
+          }
+          mytags <- append(mytags,tmp)
+          mycreated_at <- append(mycreated_at,safeEntry(y$data[[i]]$created_time))
+          mylink <- append(mylink,safeEntry(y$data[[i]]$link))
+          mylikes <- append(mylikes,safeEntry(y$data[[i]]$likes$count))
+          myurl <- append(myurl,safeEntry(y$data[[i]]$images$thumbnail$url)) # change here for larger image size
+          mytext <- append(mytext,safeEntry(y$data[[i]]$caption$text))
+        }
+      } else if(y$meta$code!=200) {
+        print("error in convertInstagramToFullDF")
+        print(y$meta$code)
+        print("call number:j,i")
+        print(c(j,i))
+      }
+    }
+    df <- data.frame( name=myname,
+                      id=myid,
+                      lat=as.double(mylat),
+                      lng=as.double(mylng),
+                      type=mytype,
+                      tags=mytags,
+                      created_at=mycreated_at,
+                      link=mylink,
+                      likes=mylikes,
+                      url=myurl,
+                      text=mytext,
+                      stringsAsFactors = FALSE
+    )
+
+  } else {
+    df <- data.frame(id=character(0),
+                     name=character(0),
+                     lat=as.double(0),
+                     lng=as.double(0),
+                     stringsAsFactors = FALSE
+    )
+  }
+  return(df)
+}
+
+getInstagramLocationMedia <- function(location_id){
+  # Given an instagram location_id, it returns recent pics/videos
+  # from the location
+
+  #ACCESS_TOKEN <- paste(readLines("instagram_key.txt"), collapse=" ")
+
+  photos <- searchInstagram
+
+  url <- paste("https://api.instagram.com/v1",
+               "/locations/",location_id,
+               "/media/recent?",
+               "access_token=", ACCESS_TOKEN,
+               sep="")
+  doc <- getURL(url)
+  x <- fromJSON(doc,simplify = FALSE)
+  if(x$meta$code==200) {
+    return(x)
+  } else {
+    print("error in InstagramLocationMedia query")
+    print(x$meta$code)
+    return(x)
+  }
+}
+
+
+safeEntry <- function(x){
+  out <- if (is.null(x)) "" else x
+  return(out)
+}
+

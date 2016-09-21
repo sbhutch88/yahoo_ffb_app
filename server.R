@@ -17,7 +17,7 @@ shinyServer(function(input, output) {
   #Collects league data when refresh button is pushed.
   #observeEvent(input$getLeague, {leagueStandings(league.key=paste0(game.key, ".l.", input$league.id),token)})
   #leagueStandingsDF <- eventReactive(input$getLeague, {leagueStandings(league.key,token)})
-  withProgress(message = 'Retrieving Roster', value = 0, {
+  withProgress(message = 'Retrieving Roster', value = 0.7, {
     teamRoster <- eventReactive(list(input$getRoster), {getTeamRoster(input$teamNames)})
   })
   #eventReactive(input$getLeague,input$league.id)
@@ -105,8 +105,11 @@ shinyServer(function(input, output) {
   output$teamRoster <- renderDataTable({
     if (input$getRoster == 0)
       return()
-    withProgress(message = 'Retrieving Roster', value = 0, {
-    roster <<- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
+    print(input$teamNames)
+    browser()
+    withProgress(message = 'Retrieving Roster', value = 0.7, {
+      #Keeping roster global
+    roster <<- isolate(getTeamRoster(leagueStandingsDF$teamID[which(leagueStandingsDF$Team == input$teamNames)]))   #getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
     })
     return(roster)
   })
@@ -197,8 +200,28 @@ shinyServer(function(input, output) {
     isolate(tweets <- tweetOrganize())
     return(HTML(as.character(tweets)))
   })
+  
+  output$instagramCall <- renderUI({
+    if (input$getRoster == 0)
+      return()
+    myLat = 51.5119149
+    myLon = -0.0968265
+    myRadius = 400
+    
+    photos <- searchInstagram(token = instagram_token, n = 10, lat=myLat,lng=myLon, distance=myRadius)
+    
+    browser()
+    # photos <- getInstagramfromJSON(myLat,myLon,myRadius)
+    # photos_df <- convertInstagramToFullDF(photos)
+    # photos_df <- subset(photos_df,photos_df$type == 'image')
+    # photos_df$likes <- as.numeric(photos_df$likes)#changes data type from character to integer.
+    # 
+    liked_photos <- photos_df[with(photos_df, order(-xtfrm(likes))),] #For some reason this doesn't work perfectly and I can't figure out why.
+    #or liked_photos <- arrange(photos_df, (-xtfrm(likes)))
+    
+    return(liked_photos)
+  })
 })
-
 
 # #####TWITTER OUTPUT
 # ## Get the news feed, and only do so if the news button gets clicked

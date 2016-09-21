@@ -2,12 +2,13 @@
 
 ####Things to do:
 #Remove Yahoo button push approval.
-
+library(instaR)
 library(httr)
 library(RJSONIO)
 library(ggplot2)
 library(httpuv)
 library(twitteR)
+#library(instaR) THis is masking fromJSON and toJSON from RJSONIO, so from now on I will call fromJSON as RJSONIO::fromJSON
 
 source('yahoo_API_call.r')
 source('yahoo_fantasy_functions.r')
@@ -16,19 +17,26 @@ source('yahoo_fantasy_functions.r')
 source('connectToTwitter.R')
 connectToTwitter()
 
+# #Sourcing Instagram functions
+# ID <- paste(readLines("instagram_client_id.txt"), collapse=" ")
+# SECRET <- paste(readLines("instagram_secret.txt"), collapse=" ")
+# instagram_token <- instaOAuth(ID, SECRET,  scope = c("basic", "public_content"))
+
 leagueStandingsDF <- leagueStandings(league.key,token)
-leagueStandingsDF <- rbind(leagueStandingsDF[12,],
-                           leagueStandingsDF[8,],
-                           leagueStandingsDF[9,],
-                           leagueStandingsDF[10,],
-                           leagueStandingsDF[11,],
-                           leagueStandingsDF[7,],
-                           leagueStandingsDF[6,],
-                           leagueStandingsDF[2,],
-                           leagueStandingsDF[1,],
-                           leagueStandingsDF[3,],
-                           leagueStandingsDF[4,],
-                           leagueStandingsDF[5,])
+
+#NOt sure why I can't get order() to work, for now I'll use this.
+leagueStandingsDF <- rbind(leagueStandingsDF[leagueStandingsDF$TeamID == 1,],
+                           leagueStandingsDF[leagueStandingsDF$TeamID == 2,],
+                           leagueStandingsDF[leagueStandingsDF$TeamID == 3,],
+                           leagueStandingsDF[leagueStandingsDF$TeamID == 4,],
+                           leagueStandingsDF[leagueStandingsDF$TeamID == 5,],
+                           leagueStandingsDF[leagueStandingsDF$TeamID == 6,],
+                           leagueStandingsDF[leagueStandingsDF$TeamID == 7,],
+                           leagueStandingsDF[leagueStandingsDF$TeamID == 8,],
+                           leagueStandingsDF[leagueStandingsDF$TeamID == 9,],
+                           leagueStandingsDF[leagueStandingsDF$TeamID == 10,],
+                           leagueStandingsDF[leagueStandingsDF$TeamID == 11,],
+                           leagueStandingsDF[leagueStandingsDF$TeamID == 12,])
 #Not sure why this is different than the other search,
 #but for now this will allow singleTeamCall to work correctly.
 

@@ -11,7 +11,7 @@ token <- oauth1.0_token(oauth_endpoints("yahoo"), myapp, cache=FALSE) #I believe
 #Getting game id for my league
 ff.url <- "http://fantasysports.yahooapis.com/fantasy/v2/game/nfl?format=json"
 game.key.json <- GET(ff.url, config(token = token))
-game.key.list <- fromJSON(as.character(game.key.json), asText=T)
+game.key.list <- RJSONIO::fromJSON(as.character(game.key.json), asText=T)
 game.key <- game.key.list$fantasy_content$game[[1]]["game_key"]
 
 #Personal league id
@@ -23,7 +23,7 @@ league.key <- paste0(game.key, ".l.", league.id)
 # nfl.url <- "http://fantasysports.yahooapis.com/fantasy/v2/game/nfl"
 # #Collecting some NFL stats
 # nfl.stat.categories.json <- GET(paste0(nfl.url,"/stat_categories?format=json"), config(token=token))
-# nfl.stat.categories.list <- fromJSON(as.character(nfl.stat.categories.json), asText = T)
+# nfl.stat.categories.list <- RJSONIO::fromJSON(as.character(nfl.stat.categories.json), asText = T)
 
 games.url <- "http://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games"
 #Can also add sub-codes like particular games/seasons

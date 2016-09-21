@@ -36,6 +36,7 @@ shinyUI(
                  tags$br(),
                  tags$br(),
                  uiOutput('image'),
+                 # uiOutput('instagramCall'),
                  tags$br(),
                  wellPanel(id = "tPanel2",style = "overflow-y:scroll; max-height: 600px",
                            #tabBox(width = NULL, style = "overflow-y:scroll; max-height: 800px", 
