@@ -9,20 +9,6 @@ library(DT)
 
 shinyUI(
   tabsetPanel(
-    tabPanel("Dashboard",
-             fluidPage(theme = "bootstrap.css",
-                       headerPanel("FFB League Explorer"),
-                       sidebarPanel(
-                         textInput("league.id", label="League ID", value = "42592",placeholder="Type your league id here"),
-                         actionButton("getLeague", "Get My League Data",icon("refresh"))
-                       ),
-                       mainPanel(
-                         column(6,plotOutput('Total_points')),
-                         column(6,plotOutput('Trades')),
-                         column(6,plotOutput('FAAB')),
-                         column(6,plotOutput('Moves'))
-                       )
-             )),
     tabPanel("Rosters",
              theme = "bootstrap.css",
              includeCSS("www/styles.css"),
@@ -36,7 +22,7 @@ shinyUI(
                  tags$br(),
                  tags$br(),
                  uiOutput('image'),
-                 # uiOutput('instagramCall'),
+                 #uiOutput('instagramCall'),
                  tags$br(),
                  wellPanel(id = "tPanel2",style = "overflow-y:scroll; max-height: 600px",
                            #tabBox(width = NULL, style = "overflow-y:scroll; max-height: 800px", 
@@ -65,6 +51,20 @@ shinyUI(
                          DT::dataTableOutput('TE')
                )
              )
-    )
+    ),
+    tabPanel("Dashboard",
+             fluidPage(theme = "bootstrap.css",
+                       headerPanel("FFB League Explorer"),
+                       sidebarPanel(
+                         textInput("league.id", label="League ID", value = "42592",placeholder="Type your league id here"),
+                         actionButton("getLeague", "Get My League Data",icon("refresh"))
+                       ),
+                       mainPanel(
+                         column(6,plotOutput('Total_points')),
+                         column(6,plotOutput('Trades')),
+                         column(6,plotOutput('FAAB')),
+                         column(6,plotOutput('Moves'))
+                       )
+             ))
   )
 )
