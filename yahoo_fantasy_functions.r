@@ -286,7 +286,7 @@ getInstagramfromJSON <- function(myLat,myLon,myRadius){
                "&distance=",myRadius,
                "&access_token=", ACCESS_TOKEN,
                sep="")
-  browser()
+  
   doc <- getURL(url)
 
   x <- fromJSON(doc,simplify = FALSE)
@@ -407,9 +407,9 @@ getInstagramLocationMedia <- function(location_id){
   # Given an instagram location_id, it returns recent pics/videos
   # from the location
 
-  #ACCESS_TOKEN <- paste(readLines("instagram_key.txt"), collapse=" ")
+  ACCESS_TOKEN <- paste(readLines("instagram_key_2.txt"), collapse=" ") #Using a new Access token I got from services.chrisriversdesign.com/instagram-token/ (browser)
 
-  photos <- searchInstagram
+  #photos <- searchInstagram
 
   url <- paste("https://api.instagram.com/v1",
                "/locations/",location_id,

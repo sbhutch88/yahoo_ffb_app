@@ -204,17 +204,15 @@ shinyServer(function(input, output) {
   output$instagramCall <- renderUI({
     if (input$getRoster == 0)
       return()
-    myLat = 51.5119149
-    myLon = -0.0968265
-    myRadius = 400
-    
-    photos <- searchInstagram(token = instagram_token, n = 10, lat=myLat,lng=myLon, distance=myRadius)
-    
+    myLat = 36.166461
+    myLon = -86.771289
+    myRadius = 750
     browser()
-    # photos <- getInstagramfromJSON(myLat,myLon,myRadius)
-    # photos_df <- convertInstagramToFullDF(photos)
-    # photos_df <- subset(photos_df,photos_df$type == 'image')
-    # photos_df$likes <- as.numeric(photos_df$likes)#changes data type from character to integer.
+    #photos <- searchInstagram(token = instagram_token, n = 10, lat=myLat,lng=myLon, distance=myRadius)
+    photos <- getInstagramfromJSON(myLat,myLon,myRadius) #This gets all locations near lat and long, later I'll need to collect stadium ids instead.
+    photos_df <- convertInstagramToFullDF(photos) #takes a long time, necessary?
+    photos_df <- subset(photos_df,photos_df$type == 'image')
+    photos_df$likes <- as.numeric(photos_df$likes)#changes data type from character to integer.
     # 
     liked_photos <- photos_df[with(photos_df, order(-xtfrm(likes))),] #For some reason this doesn't work perfectly and I can't figure out why.
     #or liked_photos <- arrange(photos_df, (-xtfrm(likes)))
