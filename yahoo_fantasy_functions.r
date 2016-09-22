@@ -412,13 +412,17 @@ getInstagramLocationMedia <- function(location_id){
 
   ACCESS_TOKEN <- paste(readLines("instagram_key_2.txt"), collapse=" ") #Using a new Access token I got from services.chrisriversdesign.com/instagram-token/ (browser)
 
-  #photos <- searchInstagram
     url <- paste("https://api.instagram.com/v1",
                  "/locations/",location_id,
                  "/media/recent?",
                  "access_token=", ACCESS_TOKEN,
                  sep="")
     doc <- getURL(url)
+    
+    #removing problem characters that are UTF-8
+    Encoding(doc) <- "UTF-8"
+    doc <- iconv(doc, "UTF-8", "UTF-8",sub='')
+    
       x <- fromJSON(doc,simplify = FALSE)
 
   
