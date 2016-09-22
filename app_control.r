@@ -17,7 +17,7 @@ source('yahoo_fantasy_functions.r')
 source('connectToTwitter.R')
 connectToTwitter()
 
-# #Sourcing Instagram functions
+# # #Sourcing Instagram functions
 # ID <- paste(readLines("instagram_client_id.txt"), collapse=" ")
 # SECRET <- paste(readLines("instagram_secret.txt"), collapse=" ")
 # instagram_token <- instaOAuth(ID, SECRET,  scope = c("basic", "public_content"))
