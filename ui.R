@@ -22,7 +22,6 @@ shinyUI(
                  tags$br(),
                  tags$br(),
                  uiOutput('image'),
-                 htmlOutput('instagramCall'),
                  tags$br(),
                  wellPanel(id = "tPanel2",style = "overflow-y:scroll; max-height: 600px",
                            #tabBox(width = NULL, style = "overflow-y:scroll; max-height: 800px", 
@@ -66,7 +65,21 @@ shinyUI(
                          column(6,plotOutput('Moves'))
                        )
              )
+    ),
+    tabPanel("Field Pass",
+             sidebarPanel(
+               tags$br(),
+               actionButton("titans", "Tennessee Titans",icon("instagram")),
+               tags$br(),
+               tags$br(),
+               actionButton("giants", "New York Giants",icon("instagram")),
+               tags$br(),
+               tags$br(),
+               actionButton("patriots", "New England Patriots",icon("instagram"))
+             ),
+             mainPanel(htmlOutput('instagramCall')
+                       
+             )
     )
   )
-  
 )

@@ -302,27 +302,27 @@ getInstagramfromJSON <- function(myLat,myLon,myRadius){
 
 convertInstagramToDF <- function(x){
   # given list from JSON-file, it extracts dataframe with:
-
+  
   if(length(x$data)>0){
     myname=""
     myid=""
     mylat=""
     mylng=""
-
+    
     for(i in (1:length(x$data))){
       myname[i] <- x$data[[i]]$name
       myid[i] <- x$data[[i]]$id
       mylat[i] <- x$data[[i]]$latitude
       mylng[i] <- x$data[[i]]$longitude
     }
-
+    
     df <- data.frame(id=myid,
                      name=myname,
                      lat=as.double(mylat),
                      lng=as.double(mylng),
                      stringsAsFactors = FALSE
     )
-
+    
   }else{
     df <- data.frame(id=character(0),
                      name=character(0),
@@ -332,11 +332,11 @@ convertInstagramToDF <- function(x){
     )
   }
   return(df)
-
+  
 }
 
 
-convertInstagramToFullDF <- function(x){
+convertInstagramToFullDF <- function(x, location_ids){
   if(length(x$data)>0){
     myname=""
     myid=""
@@ -350,6 +350,108 @@ convertInstagramToFullDF <- function(x){
     myurl=""
     mytext=""
 
+    for(j in (1:length(x$data))){
+      if(x$data[[j]]$id %in% location_ids){ #Says if the id is one that I've chosen to match stadium
+        y <- getInstagramLocationMedia(x$data[[j]]$id)
+        
+        if(y$meta$code==200 && length(y$data)>0){
+          for(i in (1:length(y$data))){
+            myname <- append(myname,safeEntry(y$data[[i]]$location$name))
+            myid <- append(myid,y$data[[i]]$location$id)
+            mylat <- append(mylat,y$data[[i]]$location$latitude)
+            mylng <- append(mylng,y$data[[i]]$location$longitude)
+            mytype <- append(mytype,safeEntry(y$data[[i]]$type))
+            if(length(y$data[[i]]$tags)>0){
+              tmp <- do.call("paste",y$data[[i]]$tags)
+            } else{
+              tmp <- ""
+            }
+            mytags <- append(mytags,tmp)
+            mycreated_at <- append(mycreated_at,safeEntry(y$data[[i]]$created_time))
+            mylink <- append(mylink,safeEntry(y$data[[i]]$link))
+            mylikes <- append(mylikes,safeEntry(y$data[[i]]$likes$count))
+            myurl <- append(myurl,safeEntry(y$data[[i]]$images$thumbnail$url)) # change here for larger image size
+            mytext <- append(mytext,safeEntry(y$data[[i]]$caption$text))
+          }
+        } else if(y$meta$code!=200) {
+          print("error in convertInstagramToFullDF")
+          print(y$meta$code)
+          print("call number:j,i")
+          print(c(j,i))
+        }
+      }
+    }
+    df <- data.frame( name=myname,
+                      id=myid,
+                      lat=as.double(mylat),
+                      lng=as.double(mylng),
+                      type=mytype,
+                      tags=mytags,
+                      created_at=mycreated_at,
+                      link=mylink,
+                      likes=mylikes,
+                      url=myurl,
+                      text=mytext,
+                      stringsAsFactors = FALSE
+    )
+    
+  } else {
+    df <- data.frame(id=character(0),
+                     name=character(0),
+                     lat=as.double(0),
+                     lng=as.double(0),
+                     stringsAsFactors = FALSE
+    )
+  }
+  return(df)
+}
+
+getInstagramLocationMedia <- function(location_id){
+  # Given an instagram location_id, it returns recent pics/videos
+  # from the location
+
+  ACCESS_TOKEN <- paste(readLines("instagram_key_2.txt"), collapse=" ") #Using a new Access token I got from services.chrisriversdesign.com/instagram-token/ (browser)
+
+  #photos <- searchInstagram
+    url <- paste("https://api.instagram.com/v1",
+                 "/locations/",location_id,
+                 "/media/recent?",
+                 "access_token=", ACCESS_TOKEN,
+                 sep="")
+    doc <- getURL(url)
+      x <- fromJSON(doc,simplify = FALSE)
+
+  
+  if(x$meta$code==200) {
+    return(x)
+  } else {
+    print("error in InstagramLocationMedia query")
+    print(x$meta$code)
+    return(x)
+  }
+}
+
+
+safeEntry <- function(x){
+  out <- if (is.null(x)) "" else x
+  return(out)
+}
+
+#This is basically a replica of the create DF function, except I've added to that one. THis will allow me to find the location IDs.
+find_ids_DF <- function(x){
+  if(length(x$data)>0){
+    myname=""
+    myid=""
+    mylat=""
+    mylng=""
+    mytype=""
+    mytags=""
+    mycreated_at=""
+    mylink=""
+    mylikes=""
+    myurl=""
+    mytext=""
+    
     for(j in (1:length(x$data))){
       y <- getInstagramLocationMedia(x$data[[j]]$id)
       if(y$meta$code==200 && length(y$data)>0){
@@ -391,7 +493,7 @@ convertInstagramToFullDF <- function(x){
                       text=mytext,
                       stringsAsFactors = FALSE
     )
-
+    
   } else {
     df <- data.frame(id=character(0),
                      name=character(0),
@@ -402,34 +504,3 @@ convertInstagramToFullDF <- function(x){
   }
   return(df)
 }
-
-getInstagramLocationMedia <- function(location_id){
-  # Given an instagram location_id, it returns recent pics/videos
-  # from the location
-
-  ACCESS_TOKEN <- paste(readLines("instagram_key_2.txt"), collapse=" ") #Using a new Access token I got from services.chrisriversdesign.com/instagram-token/ (browser)
-
-  #photos <- searchInstagram
-
-  url <- paste("https://api.instagram.com/v1",
-               "/locations/",location_id,
-               "/media/recent?",
-               "access_token=", ACCESS_TOKEN,
-               sep="")
-  doc <- getURL(url)
-  x <- fromJSON(doc,simplify = FALSE)
-  if(x$meta$code==200) {
-    return(x)
-  } else {
-    print("error in InstagramLocationMedia query")
-    print(x$meta$code)
-    return(x)
-  }
-}
-
-
-safeEntry <- function(x){
-  out <- if (is.null(x)) "" else x
-  return(out)
-}
-

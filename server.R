@@ -106,7 +106,6 @@ shinyServer(function(input, output) {
     if (input$getRoster == 0)
       return()
     print(input$teamNames)
-    browser()
     withProgress(message = 'Retrieving Roster', value = 0.7, {
       #Keeping roster global
     roster <<- isolate(getTeamRoster(leagueStandingsDF$teamID[which(leagueStandingsDF$Team == input$teamNames)]))   #getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
@@ -202,22 +201,71 @@ shinyServer(function(input, output) {
   })
   
   output$instagramCall <- renderUI({
-    if (input$getRoster == 0)
+    
+    if(input$titans == 1){
+      myLat <- 36.166461
+      myLon <- -86.771289
+      myRadius <- 200
+      location_ids <- c(16430,235934248,40500379,402555461,272032789) #Collected after the search manually
+    } else if(input$giants == 1){
+      myLat <- 40.812194
+      myLon <- -74.076983
+      myRadius <- 200
+      location_ids <- c(216284597, 269959922, 273567698)
+    } else if(input$patriots == 1){
+      myLat <- 42.090925
+      myLon <- -71.26435
+      myRadius <- 200
+      location_ids <- c(215940412, 368070324, 1014210797, 447383197, 294383241, 243014699, 5007283)
+    } else {
       return()
-    myLat = 36.166461
-    myLon = -86.771289
-    myRadius = 750
+    }
 
-    #photos <- searchInstagram(token = instagram_token, n = 10, lat=myLat,lng=myLon, distance=myRadius)
-    photos <- getInstagramfromJSON(myLat,myLon,myRadius) #This gets all locations near lat and long, later I'll need to collect stadium ids instead.
-    photos_df <- convertInstagramToFullDF(photos) #takes a long time, necessary?
-    photos_df <- subset(photos_df,photos_df$type == 'image')
-    photos_df$likes <- as.numeric(photos_df$likes)#changes data type from character to integer.
-    # 
-    liked_photos <- photos_df[with(photos_df, order(-xtfrm(likes))),] #For some reason this doesn't work perfectly and I can't figure out why.
-    #or liked_photos <- arrange(photos_df, (-xtfrm(likes)))
-    browser()
-    tags$img(src = liked_photos$url)
+    # myLat <- 36.166461
+    # myLon <- -86.771289
+    # myRadius <- 400
+    withProgress(message = 'Gathering Photos!', value = 0.7, {
+      
+      #liked_photos <- getInstagramLocationMedia(location_ids)
+      
+      #Initial photo search
+      photos <- isolate(getInstagramfromJSON(myLat,myLon,myRadius)) #This gets all locations near lat and long, later I'll need to collect stadium ids instead.
+      
+      #Use to find id's only.
+      #ids_df <- isolate(find_ids_DF(photos))
+      
+      #Now only using photos from the field's ids
+      photos_df <- isolate(convertInstagramToFullDF(photos,location_ids)) 
+      photos_df <- isolate(subset(photos_df,photos_df$type == 'image')) #maybe try videos later
+      photos_df$likes <- isolate(as.numeric(photos_df$likes))#changes data type from character to integer.
+      
+      #Sorting according to most liked photos for now
+      liked_photos <- isolate(photos_df[with(photos_df, order(-xtfrm(likes))),])#For some reason this doesn't work perfectly and I can't figure out why.
+
+      isolate(tags$ol(
+        tags$img(src = liked_photos$url[1], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[2], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[3], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[4], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[5], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[6], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[7], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[8], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[9], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[10], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[11], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[12], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[13], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[14], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[15], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[16], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[17], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[18], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[19], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[20], height = "250px", width = "250px")
+      )
+      )
+    })
     #return(HTML(as.character(liked_photos)))
   })
 })
