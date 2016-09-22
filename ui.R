@@ -26,15 +26,6 @@ shinyUI(
                  wellPanel(id = "tPanel2",style = "overflow-y:scroll; max-height: 600px",
                            #tabBox(width = NULL, style = "overflow-y:scroll; max-height: 800px", 
                            id = "tabbedBox", height = "250px",
-                           #                         fluidRow(tags$style(".nav-tabs { background-color: #006747;
-                           # .nav-tabs-custom .nav-tabs li.active:hover a, .nav-tabs-custom .nav-tabs li.active a {
-                           # background-color: transparent;
-                           #                                    border-color: transparent;
-                           #                                    }
-                           #                                    
-                           #                                    .nav-tabs-custom .nav-tabs li.active {
-                           #                                    border-top-color: #FFF;
-                           #                                    }")),
                            div(
                              tags$br(),
                              actionButton("getTweets","Get Tweets", icon("twitter")),
@@ -64,22 +55,21 @@ shinyUI(
                          column(6,plotOutput('FAAB')),
                          column(6,plotOutput('Moves'))
                        )
-             ))
-  ),
-  tabPanel("Field Pass",
-           sidebarPanel(
-             tags$br(),
-             actionButton("titans", "Tennessee Titans",icon("instagram")),
-             tags$br(),
-             tags$br(),
-             actionButton("giants", "New York Giants",icon("instagram")),
-             tags$br(),
-             tags$br(),
-             actionButton("patriots", "New England Patriots",icon("instagram"))
-           ),
-           mainPanel(htmlOutput('instagramCall')
-                     
-           )
+             )),
+    tabPanel("Field Pass",
+             sidebarPanel(
+               tags$br(),
+               actionButton("titans", "Tennessee Titans",icon("instagram")),
+               tags$br(),
+               tags$br(),
+               actionButton("giants", "New York Giants",icon("instagram")),
+               tags$br(),
+               tags$br(),
+               actionButton("patriots", "New England Patriots",icon("instagram"))
+             ),
+             mainPanel(htmlOutput('instagramCall')
+                       
+             )
+    )
   )
 )
-

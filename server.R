@@ -200,33 +200,49 @@ shinyServer(function(input, output) {
     return(HTML(as.character(tweets)))
   })
   
+  observe({input$titans
+    myLat <<- 36.166461
+    myLon <<- -86.771289
+    myRadius <<- 200
+    location_ids <<- c(16430,235934248,40500379,402555461,272032789)}) #Collected after the search manually)
+  observe({input$giants
+    myLat <<- 40.812194
+    myLon <<- -74.076983
+    myRadius <<- 200
+    location_ids <<- c(216284597, 269959922, 273567698)})
+  observe({input$patriots
+    myLat <<- 42.090925
+    myLon <<- -71.26435
+    myRadius <<- 200
+    location_ids <<- c(215940412, 368070324, 1014210797, 447383197, 294383241, 243014699, 5007283)})
+  
   output$instagramCall <- renderUI({
     
-    if(input$titans == 1){
-      myLat <- 36.166461
-      myLon <- -86.771289
-      myRadius <- 200
-      location_ids <- c(16430,235934248,40500379,402555461,272032789) #Collected after the search manually
-    } else if(input$giants == 1){
-      myLat <- 40.812194
-      myLon <- -74.076983
-      myRadius <- 200
-      location_ids <- c(216284597, 269959922, 273567698)
-    } else if(input$patriots == 1){
-      myLat <- 42.090925
-      myLon <- -71.26435
-      myRadius <- 200
-      location_ids <- c(215940412, 368070324, 1014210797, 447383197, 294383241, 243014699, 5007283)
-    } else {
+    # if(input$titans){
+    #   myLat <- 36.166461
+    #   myLon <- -86.771289
+    #   myRadius <- 200
+    #   location_ids <- c(16430,235934248,40500379,402555461,272032789) #Collected after the search manually
+    # } else if(input$giants){
+    #   myLat <- 40.812194
+    #   myLon <- -74.076983
+    #   myRadius <- 200
+    #   location_ids <- c(216284597, 269959922, 273567698)
+    # } else if(input$patriots){
+    #   myLat <- 42.090925
+    #   myLon <- -71.26435
+    #   myRadius <- 200
+    #   location_ids <- c(215940412, 368070324, 1014210797, 447383197, 294383241, 243014699, 5007283)
+    # } else {
+    #   return()
+    # }
+    
+    if(input$titans == 0 & input$giants == 0 & input$patriots == 0)
       return()
-    }
-
     # myLat <- 36.166461
     # myLon <- -86.771289
     # myRadius <- 400
     withProgress(message = 'Gathering Photos!', value = 0.7, {
-      
-      #liked_photos <- getInstagramLocationMedia(location_ids)
       
       #Initial photo search
       photos <- isolate(getInstagramfromJSON(myLat,myLon,myRadius)) #This gets all locations near lat and long, later I'll need to collect stadium ids instead.
@@ -242,7 +258,8 @@ shinyServer(function(input, output) {
       #Sorting according to most liked photos for now
       liked_photos <- isolate(photos_df[with(photos_df, order(-xtfrm(likes))),])#For some reason this doesn't work perfectly and I can't figure out why.
 
-      isolate(tags$ol(
+      #Create output tags
+      tags$ol(
         tags$img(src = liked_photos$url[1], height = "250px", width = "250px"),
         tags$img(src = liked_photos$url[2], height = "250px", width = "250px"),
         tags$img(src = liked_photos$url[3], height = "250px", width = "250px"),
@@ -264,9 +281,17 @@ shinyServer(function(input, output) {
         tags$img(src = liked_photos$url[19], height = "250px", width = "250px"),
         tags$img(src = liked_photos$url[20], height = "250px", width = "250px")
       )
-      )
     })
-    #return(HTML(as.character(liked_photos)))
+    #Shutting off inputs
+    # shinyjs::disable("titans")
+    # shinyjs::disable("giants")
+    # shinyjs::disable("patriots")
+    # shinyjs::addClass("titans", "btn-disable")
+    
+    # shinyjs::removeClass(id, "btn-disable")
+    # shinyjs::removeClass(id, "btn-enable")
+    # shinyjs::addClass(id, "btn-new")
+    
   })
 })
 
