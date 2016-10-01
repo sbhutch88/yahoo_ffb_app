@@ -222,54 +222,145 @@ connectToTwitter<-function(){
   setup_twitter_oauth(api_key, api_secret, token, token_secret)  
 }
 
+## Get list of twitter handles from vector of URLs
+scrapeForHandle <- function(url){
+  # Bad handles
+  list_to_remove <- c("@javascripts", "@statuses", "@widgets", "@share", "@search", "@oct", "@i", "@gordonramsay") 
+  # Use helper function to get around errors. Slows us down (compared to vectorised getURL)
+  front_page_text <- sapply(url,function(x) safeGetURL(x))
+  twitter_handle_re <- "twitter\\.com/(?:#!/)?(\\w+)|twitterid\\=\"(?:#!/)?(\\w+)\""
+  handles <- front_page_text %>% str_extract_all(twitter_handle_re) 
+  handles <- sapply(handles, function(x) doReplacement(x))  
+  handles <- sapply(handles, function(x,y) unique(x[!x %in% y]),y=list_to_remove)
+  handles <- sapply(handles, function(x) paste(x, collapse = " OR "))  
+  return(handles)
+}
+
+###############################
+###### Helper functions #######
+###############################
+
+## Remove additional text around handles
+doReplacement<-function(handles){
+  handles<-str_replace_all(handles, "twitter.com/", "@")
+  handles<-str_replace_all(handles, "twitterid=\"", "@")
+  handles<-str_replace_all(handles, "\"", "")
+  handles<-str_replace_all(handles, "#!/", "")
+  return(handles)
+}
+
+safeGetURL <- function (url) {
+  
+  #if(!url.exists((url)))   # Sometimes returns false for existing
+  #  return("No-URL")       # URLs
+  getWebPage <- try(getURL(url))
+  if (class(getWebPage) == "try-error") {
+    getWebPage <- "URL-error"
+  }
+  return(getWebPage)
+}
+
 # Get twitter handles for a list of URLs
-getTwitterHandles<-function(locations.df){
-  websites <- as.character(locations.df$website)
-  twitter_handles<-scrapeForHandle(websites)
-  return(twitter_handles)
+getTwitterHandles<-function(){
+  for(i in 1:length(roster$player_id)){
+    if(i == 1){
+      google_search <- paste0('https://www.google.com/search?q=', roster$first_name[i],'+', roster$last_name[i],'+twitter+handle&oq=', roster$first_name[i],'+', roster$last_name[i],
+                             '+twitter+handle&aqs=chrome..69i64j5l5.12226j0j4&sourceid=chrome&ie=UTF-8')
+    } else {
+      google_search <- rbind(google_search, paste0('https://www.google.com/search?q=', roster$first_name[i],'+', roster$last_name[i],'+twitter+handle&oq=', roster$first_name[i],'+', roster$last_name[i],
+                                                  '+twitter+handle&aqs=chrome..69i64j5l5.12226j0j4&sourceid=chrome&ie=UTF-8'))
+    }
+    
+  }
+  for(i in 1:length(roster$player_id)){
+    roster$twitter[i] <<- scrapeForHandle(google_search[i])[1]
+  }
+}
+
+getPlayerTweets <- function(twitter_handles){
+  for(i in 1:length(twitter_handles)){
+    if(i == 1){
+      tweets <- lapply(twitter_handles[i], function(x) if (length(x) != 0) userTimeline(x,n = 10, excludeReplies = T))
+      if (length(tweets[[1]]) !=0){
+        tweets.df <- twListToDF(tweets[[1]])
+        tweets.df$full_name <- roster$full_name[i]
+      } 
+      
+    }else {
+      tweets <- lapply(twitter_handles[i], function(x) if (length(x) != 0) userTimeline(x,n = 10, excludeReplies = T))
+      if (length(tweets[[1]]) !=0){
+        tweets.df <- rbind( tweets.df,tweets.df <- cbind(twListToDF(tweets[[1]]),full_name=roster$full_name[i]))
+        #tweets.df$full_name <- roster$full_name[i]
+      } 
+    }
+  }
+  return(as.data.frame(tweets.df))
 }
 
 getTweets<-function(twitter_handles){
-  #THere are situations where not all tweets are queried. In this case I need to replace with a blank for later manipulation.
-  tweets <- lapply(twitter_handles, function(x) if (length(x) != 0) searchTwitter(x,n=3))  
-  tweets.df <- lapply(tweets, function(x) twListToDF(x))
+  for(i in 1:length(twitter_handles)){
+    if(i == 1){
+      tweets <- lapply(twitter_handles, function(x) if (length(x) != 0) searchTwitter(x,n=3))  
+      tweets.df <- lapply(tweets, function(x) twListToDF(x))
+    } else {
+      tweets <- lapply(twitter_handles, function(x) if (length(x) != 0) searchTwitter(x,n=3))  
+      tweets.df <- rbind(tweets.df,lapply(tweets, function(x) twListToDF(x)))
+    }
+  }
   return(as.data.frame(tweets.df))
 }
 
 tweetOrganize <- function(){
   withProgress(message = 'Connecting to Twitter!', value = 0.7, {
-    allTweets <- getTweets(as.character(roster$full_name))
+    #allTweets <- getTweets(as.character(roster$full_name))
+    allTweets <- getPlayerTweets(as.character(roster$twitter))
     handles <- as.character(roster$full_name)
     handles <- sapply(handles, function(x) paste("<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", x, "<br/>"))
     tweets <- "<br/>"
-    for(i in 0:(nrow(roster)-1)){
-      j <- i + 1 #because df starts at 1
-      if(i == 0){
-        tweets <- paste(tweets,
-                        paste0('\'<img src = \"',as.character(roster$headshot[j]),'\"></img>\''), handles[j],
-                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[1],"<br/>",
-                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[2],"<br/>",
-                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[3],
-                        "<br/>",
-                        "<br/>"
-        )
-      } else {
-        tweets <- paste(tweets,
-                        paste0('\'<img src = \"',as.character(roster$headshot[j]),'\"></img>\''),
-                        handles[j],
-                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[1]"))),"<br/>",
-                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[2]"))),"<br/>",
-                        "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[3]"))),
-                        "<br/>",
-                        "<br/>"
-        )
+    for(i in 1:length(roster$player_id)){
+      tweet_header <- paste0('\'<img src = \"',as.character(roster$headshot[i]),'\"></img>\'', handles[i], roster$twitter[i], "<br/>")
+      temp_tweets <- allTweets[allTweets$full_name %in% roster$full_name[i],]
+      for(j in 1:length(temp_tweets$full_name)){
+        if(j==1){
+          tweets <- paste(tweet_header,"<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", temp_tweets$text[j],"<br/>")
+        } else {
+          tweets <- paste(tweets,"<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", temp_tweets$text[j],"<br/>")
+        }
+      }
+      if(i==1){
+        tweet_html <- tweets
+      }else {
+        tweet_html <- paste(tweet_html,tweets,"<br/>")
       }
     }
+    #Used when I am getting tweets with the players mentioned, rather than handles.
+    # for(i in 0:(nrow(roster)-1)){
+    #   j <- i + 1 #because df starts at 1
+    #   if(i == 0){
+    #     tweets <- paste(tweets,
+    #                     paste0('\'<img src = \"',as.character(roster$headshot[j]),'\"></img>\''), handles[j],
+    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[1],"<br/>",
+    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[2],"<br/>",
+    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[3],
+    #                     "<br/>",
+    #                     "<br/>"
+    #     )
+    #   } else {
+    #     tweets <- paste(tweets,
+    #                     paste0('\'<img src = \"',as.character(roster$headshot[j]),'\"></img>\''),
+    #                     handles[j],
+    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[1]"))),"<br/>",
+    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[2]"))),"<br/>",
+    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[3]"))),
+    #                     "<br/>",
+    #                     "<br/>"
+    #     )
+    #   }
+    # }
     #removing problem characters that are UTF-8
-    Encoding(tweets) <- "UTF-8"
-    tweets <- iconv(tweets, "UTF-8", "UTF-8",sub='')
-
-    return(tweets)
+    Encoding(tweet_html) <- "UTF-8"
+    tweet_html <- iconv(tweet_html, "UTF-8", "UTF-8",sub='')
+    return(tweet_html)
   })
 }
 

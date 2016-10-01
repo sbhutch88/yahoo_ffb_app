@@ -196,6 +196,8 @@ shinyServer(function(input, output) {
   output$outputTweets <- renderUI({
     if (input$getTweets == 0)#|input$getRoster == 0)
       return()
+    #Scrape for handles and add to roster DF (this could be done earlier)
+    getTwitterHandles()
     isolate(tweets <- tweetOrganize())
     return(HTML(as.character(tweets)))
   })
@@ -441,7 +443,17 @@ shinyServer(function(input, output) {
         tags$img(src = liked_photos$url[17], height = "250px", width = "250px"),
         tags$img(src = liked_photos$url[18], height = "250px", width = "250px"),
         tags$img(src = liked_photos$url[19], height = "250px", width = "250px"),
-        tags$img(src = liked_photos$url[20], height = "250px", width = "250px")
+        tags$img(src = liked_photos$url[20], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[21], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[22], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[23], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[24], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[25], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[26], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[27], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[28], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[29], height = "250px", width = "250px"),
+        tags$img(src = liked_photos$url[30], height = "250px", width = "250px")
       )
     })
     #Shutting off inputs
