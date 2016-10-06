@@ -84,7 +84,6 @@ shinyServer(function(input, output) {
   
   #Keeps league id from user updated
   updateLeagueID <- reactive({
-    
     league.id = input$league.id
   })
 
@@ -467,6 +466,14 @@ shinyServer(function(input, output) {
     # shinyjs::addClass(id, "btn-new")
     
   })
+  
+  observeEvent(input$slack_post,{
+    # if (input$slack_post == 0)#|input$getRoster == 0)
+    #   return()
+    slack_ghost(input$slack_text)
+    text <- 'Trash Talk Sent'
+  })
+  
 })
 
 # #####TWITTER OUTPUT

@@ -12,6 +12,7 @@ library(twitteR)
 
 source('yahoo_API_call.r')
 source('yahoo_fantasy_functions.r')
+source('slack_functions.R')
 
 #Connecting to twitter
 source('connectToTwitter.R')

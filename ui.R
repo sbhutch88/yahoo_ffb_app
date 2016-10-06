@@ -47,7 +47,14 @@ shinyUI(
                        headerPanel("FFB League Explorer"),
                        sidebarPanel(
                          textInput("league.id", label="League ID", value = "42592",placeholder="Type your league id here"),
-                         actionButton("getLeague", "Get My League Data",icon("refresh"))
+                         actionButton("getLeague", "Get My League Data",icon("refresh")),
+                         tags$br(),
+                         tags$br(),
+                         tags$br(),
+                         tags$h4('Slack Ghost'),
+                         tags$hr(),
+                         textInput("slack_text", label = "Type your anonymous trash talk here:"),
+                         actionButton("slack_post", "Post Trash Talk to Slack",icon("slack"))
                        ),
                        mainPanel(
                          column(6,plotOutput('Total_points')),
