@@ -8,11 +8,11 @@ player.url <- "http://fantasysports.yahooapis.com/fantasy/v2/player/"
 #Very quickly gets info on all players in the league, without stats.
 #*** It looks like I can add to the end of this call to get more information. There is some way to choose certain options too
 getLeaguePlayers <- function(league.key){
+  # all.league.players.json <- GET(paste0(league.url, league.key, "/players/display_position='WR'?format=json"), config(token = token))
   all.league.players.json <- GET(paste0(league.url, league.key, "/players/ownership/stats?format=json"), config(token = token))
   all.league.players.list <- RJSONIO::fromJSON(as.character(all.league.players.json), asText=T)
   return(all.league.players.list)
 }  
-
 
 leagueStandings <- function(league.key,token){
   leagueStandings.json <- GET(paste0(league.url,league.key,"/standings?format=json"), config(token=token))
@@ -47,11 +47,11 @@ leagueStandings <- function(league.key,token){
 
 #This function will pull information from your team, and specifically where they are on your roster (bench vs starting etc.)
 teamRoster <- function(teamNum){
+  # teamRoster.json <- GET(paste0(team.url, league.key, ".t.", teamNum, "/roster?format=json"), config(token = token))
   teamRoster.json <- GET(paste0(team.url, league.key, ".t.", teamNum, "/roster/players?format=json"), config(token = token))
   teamRoster.list <- RJSONIO::fromJSON(as.character(teamRoster.json), asText=T)
   return(teamRoster.list)
 }
-
 
 #Will call player info from a single fantasy team in a league.
 singleTeamCall <- function(teamNum){
@@ -151,7 +151,7 @@ nflPlayerStatBuildDF <- function(nfl.player.stats.list){
 
 
 teamPlayerInfo <- function(player_id){
-  playerFantasy.json <- GET(paste0(league.url, league.key, "/players;player_keys=",player_id,"/stats"), config(token = token))
+  playerFantasy.json <- GET(paste0(league.url, league.key, "/players;player_keys=",player_id,"/stats?format=json"), config(token = token))
   playerFantasy.list <- RJSONIO::fromJSON(as.character(playerFantasy.json), asText=T)
   return(playerFantasy.list)
 }
@@ -278,6 +278,7 @@ getTwitterHandles<-function(){
 }
 
 getPlayerTweets <- function(twitter_handles){
+  twitter_handles[twitter_handles == ""] <- "@adamschefter" #Removes any blanks for now THIS IS TEMPORARY
   for(i in 1:length(twitter_handles)){
     if(i == 1){
       tweets <- lapply(twitter_handles[i], function(x) if (length(x) != 0) userTimeline(x,n = 10, excludeReplies = T))

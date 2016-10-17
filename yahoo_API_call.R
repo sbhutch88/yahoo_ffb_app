@@ -36,7 +36,7 @@ nflPlayer.url <- "http://fantasysports.yahooapis.com/fantasy/v2/player/223.p.547
 #or /fantasy/v2/player//metadata
 
 #Get all players within a league
-playersLeage.url <-"http://fantasysports.yahooapis.com/fantasy/v2/league/223.l.431/players"
+playersLeague.url <-"http://fantasysports.yahooapis.com/fantasy/v2/league/223.l.431/players"
 #much more for specific teams too. All different types of calls for FA, owned; specific players, specific teams etc.
 #Sorting by certain stats.
 
