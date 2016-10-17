@@ -12,7 +12,7 @@ library(DT)
 #source('yahoo_API_call.R')
 source('yahoo_fantasy_functions.r')
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   #league.key <- reactiveValues(input$getLeague)
   #Collects league data when refresh button is pushed.
   #observeEvent(input$getLeague, {leagueStandings(league.key=paste0(game.key, ".l.", input$league.id),token)})
@@ -115,7 +115,7 @@ shinyServer(function(input, output) {
   output$QB <- DT::renderDataTable({
     if (input$getRoster == 0)
       return()
-    withProgress(message = 'Retrieving Roster', value = 0, {
+    withProgress(message = 'Retrieving Roster', value = 0.7, {
       roster <<- isolate(getTeamRoster(which(leagueStandingsDF$Team == input$teamNames)))
     })
     QB <- roster[roster$position == 'QB',]
@@ -196,8 +196,11 @@ shinyServer(function(input, output) {
     if (input$getTweets == 0)#|input$getRoster == 0)
       return()
     #Scrape for handles and add to roster DF (this could be done earlier)
-    getTwitterHandles()
+    withProgress(message = 'Scraping for Player Twitter Handles', value = 0.3, {
+      getTwitterHandles()
+    incProgress(0.4, detail = 'Connecting to Twitter!')
     isolate(tweets <- tweetOrganize())
+    })
     return(HTML(as.character(tweets)))
   })
   
@@ -471,6 +474,9 @@ shinyServer(function(input, output) {
     # if (input$slack_post == 0)#|input$getRoster == 0)
     #   return()
     slack_ghost(input$slack_text)
+    
+    #clear text on submit
+    updateTextInput(session, inputId = "slack_text", value = " ")
     text <- 'Trash Talk Sent'
   })
   

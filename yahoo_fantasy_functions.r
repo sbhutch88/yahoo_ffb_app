@@ -278,7 +278,10 @@ getTwitterHandles<-function(){
 }
 
 getPlayerTweets <- function(twitter_handles){
-  twitter_handles[twitter_handles == ""] <- "@adamschefter" #Removes any blanks for now THIS IS TEMPORARY
+  #Removes any blanks for now THIS IS TEMPORARY
+  twitter_handles[twitter_handles == ""] <- "@adamSchefter" 
+  roster$twitter[roster$twitter == ""] <<- "@adamSchefter"
+  
   for(i in 1:length(twitter_handles)){
     if(i == 1){
       tweets <- lapply(twitter_handles[i], function(x) if (length(x) != 0) userTimeline(x,n = 10, excludeReplies = T))
@@ -312,57 +315,55 @@ getTweets<-function(twitter_handles){
 }
 
 tweetOrganize <- function(){
-  withProgress(message = 'Connecting to Twitter!', value = 0.7, {
-    #allTweets <- getTweets(as.character(roster$full_name))
-    allTweets <- getPlayerTweets(as.character(roster$twitter))
-    handles <- as.character(roster$full_name)
-    handles <- sapply(handles, function(x) paste("<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", x, "<br/>"))
-    tweets <- "<br/>"
-    for(i in 1:length(roster$player_id)){
-      tweet_header <- paste0('\'<img src = \"',as.character(roster$headshot[i]),'\"></img>\'', handles[i], roster$twitter[i], "<br/>")
-      temp_tweets <- allTweets[allTweets$full_name %in% roster$full_name[i],]
-      for(j in 1:length(temp_tweets$full_name)){
-        if(j==1){
-          tweets <- paste(tweet_header,"<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", temp_tweets$text[j],"<br/>")
-        } else {
-          tweets <- paste(tweets,"<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", temp_tweets$text[j],"<br/>")
-        }
-      }
-      if(i==1){
-        tweet_html <- tweets
-      }else {
-        tweet_html <- paste(tweet_html,tweets,"<br/>")
+  #allTweets <- getTweets(as.character(roster$full_name))
+  allTweets <- getPlayerTweets(as.character(roster$twitter))
+  handles <- as.character(roster$full_name)
+  handles <- sapply(handles, function(x) paste("<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", x, "<br/>"))
+  tweets <- "<br/>"
+  for(i in 1:length(roster$player_id)){
+    tweet_header <- paste0('\'<img src = \"',as.character(roster$headshot[i]),'\"></img>\'', handles[i], roster$twitter[i], "<br/>")
+    temp_tweets <- allTweets[allTweets$full_name %in% roster$full_name[i],]
+    for(j in 1:length(temp_tweets$full_name)){
+      if(j==1){
+        tweets <- paste(tweet_header,"<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", temp_tweets$text[j],"<br/>")
+      } else {
+        tweets <- paste(tweets,"<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", temp_tweets$text[j],"<br/>")
       }
     }
-    #Used when I am getting tweets with the players mentioned, rather than handles.
-    # for(i in 0:(nrow(roster)-1)){
-    #   j <- i + 1 #because df starts at 1
-    #   if(i == 0){
-    #     tweets <- paste(tweets,
-    #                     paste0('\'<img src = \"',as.character(roster$headshot[j]),'\"></img>\''), handles[j],
-    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[1],"<br/>",
-    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[2],"<br/>",
-    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[3],
-    #                     "<br/>",
-    #                     "<br/>"
-    #     )
-    #   } else {
-    #     tweets <- paste(tweets,
-    #                     paste0('\'<img src = \"',as.character(roster$headshot[j]),'\"></img>\''),
-    #                     handles[j],
-    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[1]"))),"<br/>",
-    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[2]"))),"<br/>",
-    #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[3]"))),
-    #                     "<br/>",
-    #                     "<br/>"
-    #     )
-    #   }
-    # }
-    #removing problem characters that are UTF-8
-    Encoding(tweet_html) <- "UTF-8"
-    tweet_html <- iconv(tweet_html, "UTF-8", "UTF-8",sub='')
-    return(tweet_html)
-  })
+    if(i==1){
+      tweet_html <- tweets
+    }else {
+      tweet_html <- paste(tweet_html,tweets,"<br/>")
+    }
+  }
+  #Used when I am getting tweets with the players mentioned, rather than handles.
+  # for(i in 0:(nrow(roster)-1)){
+  #   j <- i + 1 #because df starts at 1
+  #   if(i == 0){
+  #     tweets <- paste(tweets,
+  #                     paste0('\'<img src = \"',as.character(roster$headshot[j]),'\"></img>\''), handles[j],
+  #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[1],"<br/>",
+  #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[2],"<br/>",
+  #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", allTweets$text[3],
+  #                     "<br/>",
+  #                     "<br/>"
+  #     )
+  #   } else {
+  #     tweets <- paste(tweets,
+  #                     paste0('\'<img src = \"',as.character(roster$headshot[j]),'\"></img>\''),
+  #                     handles[j],
+  #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[1]"))),"<br/>",
+  #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[2]"))),"<br/>",
+  #                     "<i class=\"fa fa-twitter-square\" style=\"color:blue\"> </i>", eval(parse(text=paste0("allTweets$text.", i, "[3]"))),
+  #                     "<br/>",
+  #                     "<br/>"
+  #     )
+  #   }
+  # }
+  #removing problem characters that are UTF-8
+  Encoding(tweet_html) <- "UTF-8"
+  tweet_html <- iconv(tweet_html, "UTF-8", "UTF-8",sub='')
+  return(tweet_html)
 }
 
 #########INSTAGRAM
