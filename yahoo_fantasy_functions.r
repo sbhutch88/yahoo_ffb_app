@@ -279,8 +279,9 @@ getTwitterHandles<-function(){
 
 getPlayerTweets <- function(twitter_handles){
   #Removes any blanks for now THIS IS TEMPORARY
-  twitter_handles[twitter_handles == ""] <- "@adamSchefter" 
-  roster$twitter[roster$twitter == ""] <<- "@adamSchefter"
+  exclude <- c("","@hashtag")
+  twitter_handles[twitter_handles %in% exclude] <- "@adamSchefter" 
+  roster$twitter[roster$twitter %in% exclude] <<- "@adamSchefter"
   
   for(i in 1:length(twitter_handles)){
     if(i == 1){
