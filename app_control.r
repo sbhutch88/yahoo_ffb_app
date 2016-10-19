@@ -15,7 +15,7 @@ source('yahoo_fantasy_functions.r')
 source('slack_functions.R')
 
 #Connecting to twitter
-source('connectToTwitter.R')
+#source('connectToTwitter.R') #moved to fantasy functions
 connectToTwitter()
 
 # # #Sourcing Instagram functions

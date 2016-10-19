@@ -270,7 +270,6 @@ getTwitterHandles<-function(){
       google_search <- rbind(google_search, paste0('https://www.google.com/search?q=', roster$first_name[i],'+', roster$last_name[i],'+twitter+handle&oq=', roster$first_name[i],'+', roster$last_name[i],
                                                   '+twitter+handle&aqs=chrome..69i64j5l5.12226j0j4&sourceid=chrome&ie=UTF-8'))
     }
-    
   }
   for(i in 1:length(roster$player_id)){
     roster$twitter[i] <<- scrapeForHandle(google_search[i])[1]
@@ -282,6 +281,7 @@ getPlayerTweets <- function(twitter_handles){
   exclude <- c("","@hashtag")
   twitter_handles[twitter_handles %in% exclude] <- "@adamSchefter" 
   roster$twitter[roster$twitter %in% exclude] <<- "@adamSchefter"
+  tweets.df <- NULL
   
   for(i in 1:length(twitter_handles)){
     if(i == 1){
@@ -290,13 +290,15 @@ getPlayerTweets <- function(twitter_handles){
         tweets.df <- twListToDF(tweets[[1]])
         tweets.df$full_name <- roster$full_name[i]
       } 
-      
-    }else {
+    } else {
       tweets <- lapply(twitter_handles[i], function(x) if (length(x) != 0) userTimeline(x,n = 10, excludeReplies = T))
-      if (length(tweets[[1]]) !=0){
+      if (length(tweets[[1]]) !=0 && is.null(tweets.df) == FALSE){
         tweets.df <- rbind( tweets.df,tweets.df <- cbind(twListToDF(tweets[[1]]),full_name=roster$full_name[i]))
         #tweets.df$full_name <- roster$full_name[i]
-      } 
+      } else if(length(tweets[[1]]) !=0 && is.null(tweets.df) == TRUE){
+        tweets.df <- twListToDF(tweets[[1]])
+        tweets.df$full_name <- roster$full_name[i]
+      }
     }
   }
   return(as.data.frame(tweets.df))
