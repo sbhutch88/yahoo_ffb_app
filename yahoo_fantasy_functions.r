@@ -212,11 +212,11 @@ build_DT <- function(df){
 ################Twitter connections
 
 connectToTwitter<-function(){
-  # Keys linked to Richard's account:
-  api_key <- "AtQtjjw2E91n2APFYOIlqd9Ur" 
-  api_secret <- "hA6Xnjd6jRddfgvVMzlfWGqd1M1X68EAwEO4yqYIzUTb51jlCr" 
-  token <- "558889232-ljdFmtDDZPeeJPZG3bYQhYZO75eXa5t1hVDjrdAd" 
-  token_secret <- "5gVYRr0fKbpsT6hRqLVhDAxHTu4COxTVCOLsaDjx8aiFV"
+  # Keys linked to Steve's account:
+  api_key <- paste(readLines("twitter_api_key.txt"), collapse=" ") 
+  api_secret <- paste(readLines("twitter_api_secret.txt"), collapse=" ") 
+  token <- paste(readLines("twitter_token.txt"), collapse=" ")
+  token_secret <- paste(readLines("twitter_token_secret.txt"), collapse=" ")
   
   #Create Twitter Connection
   setup_twitter_oauth(api_key, api_secret, token, token_secret)
