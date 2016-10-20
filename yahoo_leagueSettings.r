@@ -5,7 +5,7 @@ library(RJSONIO)
 library(httpuv)
 
 
-source('yahoo_API_call.r')
+source('yahoo_API_call.R')
 
 league.url <- "http://fantasysports.yahooapis.com/fantasy/v2/league/"
 

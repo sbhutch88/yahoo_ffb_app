@@ -10,8 +10,8 @@ library(httpuv)
 library(twitteR)
 #library(instaR) THis is masking fromJSON and toJSON from RJSONIO, so from now on I will call fromJSON as RJSONIO::fromJSON
 
-source('yahoo_API_call.r')
-source('yahoo_fantasy_functions.r')
+source('yahoo_API_call.R')
+source('yahoo_fantasy_functions.R')
 source('slack_functions.R')
 
 #Connecting to twitter

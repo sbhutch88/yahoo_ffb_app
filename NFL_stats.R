@@ -3,7 +3,7 @@
 #it says this is a 2-legged call. I'm having trouble making the call for now, but there should definitely be a way.
 
 #Sourcing API access file
-source('yahoo_API_call.r')
+source('yahoo_API_call.R')
 
 #A whole bunch can be found about nfl players (ex. drew brees)
 nflPlayer.url <- "http://fantasysports.yahooapis.com/fantasy/v2/player/"

@@ -1,5 +1,5 @@
 
-source('yahoo_API_call.r')
+source('yahoo_API_call.R')
 
 
 num.teams <- 12
