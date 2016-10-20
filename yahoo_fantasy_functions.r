@@ -219,7 +219,9 @@ connectToTwitter<-function(){
   token_secret <- "5gVYRr0fKbpsT6hRqLVhDAxHTu4COxTVCOLsaDjx8aiFV"
   
   #Create Twitter Connection
-  setup_twitter_oauth(api_key, api_secret, token, token_secret)  
+  setup_twitter_oauth(api_key, api_secret, token, token_secret)
+  
+  rateLimit <<- getCurRateLimitInfo()
 }
 
 ## Get list of twitter handles from vector of URLs

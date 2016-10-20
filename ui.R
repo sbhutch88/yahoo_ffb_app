@@ -1,6 +1,5 @@
 #Yahoo ffb app UI
 #initializing for displays
-
 source('initialize.R')
 source('app_control.R')
 library(shiny)

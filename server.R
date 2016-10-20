@@ -10,7 +10,8 @@ library(DT)
 #source('initialize.R')
 #source('app_control.R')
 #source('yahoo_API_call.R')
-source('yahoo_fantasy_functions.r')
+source('yahoo_fantasy_functions.R')
+setwd('C:/Users/sbhut/Documents/GitHub/yahoo_ffb_app')
 
 shinyServer(function(input, output, session) {
   #league.key <- reactiveValues(input$getLeague)
