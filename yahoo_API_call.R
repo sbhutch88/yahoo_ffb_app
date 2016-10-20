@@ -3,10 +3,16 @@
 consumer.key = paste(readLines("consumer_key.txt"), collapse=" ")
 consumer.secret = paste(readLines("consumer_secret.txt"), collapse=" ")
 
-oauth_endpoints("yahoo")
-myapp <- oauth_app("yahoo", key = consumer.key, secret = consumer.secret)
-#token <- oauth1.0_token(oauth_endpoints("yahoo"), myapp)
-token <- oauth1.0_token(oauth_endpoints("yahoo"), myapp, cache=FALSE) #I believe it will ask me to re-authenticate every hour.
+#Original version of Yahoo Connection (works well but something is wrong with SHiny deploy)
+# oauth_endpoints("yahoo")
+# myapp <- oauth_app("yahoo", key = consumer.key, secret = consumer.secret)
+# #token <- oauth1.0_token(oauth_endpoints("yahoo"), myapp)
+# token <- oauth1.0_token(oauth_endpoints("yahoo"), myapp, cache=FALSE) #I believe it will ask me to re-authenticate every hour.
+
+#New Connection, originally taken from Dennis Email code
+yahoo_endpoint <- httr::oauth_endpoints("yahoo")
+yahoo_app <- httr::oauth_app("yahoo", key = consumer.key, secret = consumer.secret)
+token <- httr::oauth1.0_token(oauth_endpoints("yahoo"), yahoo_app)
 
 #Getting game id for my league
 ff.url <- "http://fantasysports.yahooapis.com/fantasy/v2/game/nfl?format=json"
