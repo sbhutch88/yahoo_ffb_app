@@ -231,7 +231,7 @@ scrapeForHandle <- function(url){
   # Use helper function to get around errors. Slows us down (compared to vectorised getURL)
   front_page_text <- sapply(url,function(x) safeGetURL(x))
   twitter_handle_re <- "twitter\\.com/(?:#!/)?(\\w+)|twitterid\\=\"(?:#!/)?(\\w+)\""
-  handles <- front_page_text %>% str_extract_all(twitter_handle_re) 
+  handles <- front_page_text %>% stringr::str_extract_all(twitter_handle_re) 
   handles <- sapply(handles, function(x) doReplacement(x))  
   handles <- sapply(handles, function(x,y) unique(x[!x %in% y]),y=list_to_remove)
   handles <- sapply(handles, function(x) paste(x, collapse = " OR "))  
@@ -244,10 +244,10 @@ scrapeForHandle <- function(url){
 
 ## Remove additional text around handles
 doReplacement<-function(handles){
-  handles<-str_replace_all(handles, "twitter.com/", "@")
-  handles<-str_replace_all(handles, "twitterid=\"", "@")
-  handles<-str_replace_all(handles, "\"", "")
-  handles<-str_replace_all(handles, "#!/", "")
+  handles<-stringr::str_replace_all(handles, "twitter.com/", "@")
+  handles<-stringr::str_replace_all(handles, "twitterid=\"", "@")
+  handles<-stringr::str_replace_all(handles, "\"", "")
+  handles<-stringr::str_replace_all(handles, "#!/", "")
   return(handles)
 }
 
@@ -255,7 +255,7 @@ safeGetURL <- function (url) {
   
   #if(!url.exists((url)))   # Sometimes returns false for existing
   #  return("No-URL")       # URLs
-  getWebPage <- try(getURL(url))
+  getWebPage <- try(RCurl::getURL(url))
   if (class(getWebPage) == "try-error") {
     getWebPage <- "URL-error"
   }
@@ -385,7 +385,7 @@ getInstagramfromJSON <- function(myLat,myLon,myRadius){
                "&access_token=", ACCESS_TOKEN,
                sep="")
   
-  doc <- getURL(url)
+  doc <- RCurl::getURL(url)
 
   x <- fromJSON(doc,simplify = FALSE)
   if(x$meta$code==200) {
@@ -515,7 +515,7 @@ getInstagramLocationMedia <- function(location_id){
                  "/media/recent?",
                  "access_token=", ACCESS_TOKEN,
                  sep="")
-    doc <- getURL(url)
+    doc <- RCurl::getURL(url)
     
     #removing problem characters that are UTF-8
     Encoding(doc) <- "UTF-8"

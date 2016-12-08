@@ -9,6 +9,7 @@ library(ggplot2)
 library(httpuv)
 library(twitteR)
 #library(instaR) THis is masking fromJSON and toJSON from RJSONIO, so from now on I will call fromJSON as RJSONIO::fromJSON
+#** Also I have some stringr functions in my handle web-scrape that I need to now put stringr:: before. I think because I installed stringi
 
 source('yahoo_API_call.R')
 source('yahoo_fantasy_functions.R')
